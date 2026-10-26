@@ -1,0 +1,1952 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="config.js"></script>
+<script>if (window.RADAR_CONFIG && RADAR_CONFIG.supabaseUrl && RADAR_CONFIG.supabaseAnonKey) document.documentElement.classList.add('sv-bloqueado');</script>
+<link rel="stylesheet" href="servidor.css">
+<link rel="icon" type="image/png" href="icone-sm-score.png">
+</head>
+<body><title>Radar da Certificação</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: aplicação com menu lateral azul-marinho fixo (252px) e área principal com barra superior,
+   linha de KPIs e grades de cartões brancos. Abaixo de 900px o menu vira uma faixa horizontal no topo. */
+:root {
+  --bg: #F4F6FB;
+  --surface: #FFFFFF;
+  --surface-2: #F8F9FD;
+  --sunken: #EEF1F7;
+  --ink: #141B34;
+  --ink-2: #3D4766;
+  --muted: #6B7594;
+  --line: #E4E8F1;
+  --side: #10204D;
+  --side-2: #091433;
+  --side-ink: #FFFFFF;
+  --side-muted: #AAB5D8;
+  --side-hover: rgba(255, 255, 255, 0.06);
+  --side-active: rgba(122, 140, 255, 0.22);
+  --primary: #3B3EB8;
+  --primary-2: #6366E0;
+  --primary-soft: #ECEDFC;
+  --primary-line: #C9CBF4;
+  --on-primary: #FFFFFF;
+  --gold: #E3A300;
+  --gold-ink: #8A6200;
+  --gold-soft: #FFF5DB;
+  --on-gold: #1E1600;
+  --good: #14804A; --good-soft: #E2F5E9;
+  --warn: #A35F00; --warn-soft: #FFF1D6;
+  --bad: #C2372F; --bad-soft: #FDE8E6;
+  --bar-good: #1F9254; --bar-warn: #E9B320; --bar-bad: #E0524A;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+  --s-off: #E3E7F0;
+  --bar-before: #B9C0D6;
+  --grid: #E9ECF3;
+  --xls: #1F7A45; --csv: #2A6FB0; --on-file: #FFFFFF;
+  --shadow: 0 1px 2px rgb(20 27 52 / 0.05), 0 2px 8px rgb(20 27 52 / 0.04);
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1022; --surface: #131A33; --surface-2: #161E3A; --sunken: #1C2547; --ink: #E9EDF9; --ink-2: #C4CBE3; --muted: #8F99B8; --line: #262F55;
+    --side: #0B1638; --side-2: #060C22;
+    --primary: #8E91F2; --primary-2: #A9ABF6; --primary-soft: #24295C; --primary-line: #3A4190; --on-primary: #0B1022;
+    --gold: #F2C23E; --gold-ink: #F2C23E; --gold-soft: #3A2F0E;
+    --good: #5CCB8E; --good-soft: #12301F; --warn: #F0B25A; --warn-soft: #3A2A10; --bad: #F28B82; --bad-soft: #3E1A18;
+    --bar-good: #2FB36B; --bar-warn: #E9B320; --bar-bad: #EE6A62;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --s-off: #2A3358; --bar-before: #4A5478; --grid: #222B4D;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B1022; --surface: #131A33; --surface-2: #161E3A; --sunken: #1C2547; --ink: #E9EDF9; --ink-2: #C4CBE3; --muted: #8F99B8; --line: #262F55;
+  --side: #0B1638; --side-2: #060C22;
+  --primary: #8E91F2; --primary-2: #A9ABF6; --primary-soft: #24295C; --primary-line: #3A4190; --on-primary: #0B1022;
+  --gold: #F2C23E; --gold-ink: #F2C23E; --gold-soft: #3A2F0E;
+  --good: #5CCB8E; --good-soft: #12301F; --warn: #F0B25A; --warn-soft: #3A2A10; --bad: #F28B82; --bad-soft: #3E1A18;
+  --bar-good: #2FB36B; --bar-warn: #E9B320; --bar-bad: #EE6A62;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --s-off: #2A3358; --bar-before: #4A5478; --grid: #222B4D;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ic { flex: none; }
+.up { color: var(--good); font-weight: 700; }
+.down { color: var(--bad); font-weight: 700; }
+.muted { color: var(--muted); }
+[hidden] { display: none !important; }
+
+/* Menu lateral */
+.app { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; }
+.side { position: sticky; top: 0; height: 100vh; overflow: hidden auto; display: flex; flex-direction: column; gap: 28px; padding: 24px 14px 0; padding-left: max(14px, env(safe-area-inset-left, 0px)); background: linear-gradient(180deg, var(--side) 0%, var(--side-2) 100%); color: var(--side-ink); }
+.side :focus-visible { outline-color: var(--side-ink); }
+.logo { display: flex; align-items: center; gap: 12px; padding: 0 8px; }
+.logo strong { display: block; font-size: 1.2rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; }
+.logo small { display: block; margin-top: 6px; font-size: 0.56rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--side-muted); line-height: 1.4; }
+.nav { display: grid; gap: 4px; }
+.nav button { appearance: none; border: 0; background: none; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; color: var(--side-muted); font-weight: 500; font-size: 0.92rem; text-align: left; cursor: pointer; }
+.nav button:hover { background: var(--side-hover); color: var(--side-ink); }
+.nav button[aria-current="page"] { background: var(--side-active); color: var(--side-ink); font-weight: 600; }
+.nav .count { margin-left: auto; min-width: 22px; padding: 0 7px; border-radius: 999px; background: var(--gold); color: var(--on-gold); font-size: 0.74rem; font-weight: 700; text-align: center; }
+.side-foot { margin-top: auto; position: relative; min-height: 280px; padding: 0 10px 30px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+.tower { position: absolute; right: -6px; bottom: 0; color: var(--side-muted); opacity: 0.32; }
+.side-foot p { position: relative; font-size: 1.15rem; font-weight: 500; line-height: 1.3; }
+.side-foot p::after { content: ""; display: block; width: 36px; height: 3px; border-radius: 2px; background: var(--gold); margin-top: 14px; }
+
+/* Barra superior */
+.main { min-width: 0; display: flex; flex-direction: column; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; padding: 14px 28px; padding-right: max(28px, env(safe-area-inset-right, 0px)); background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-right: auto; min-width: 0; }
+.top-t strong { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; }
+.top-t span { color: var(--muted); font-size: 0.84rem; }
+.search { display: flex; align-items: center; gap: 8px; width: 210px; max-width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); color: var(--muted); }
+.search input { border: 0; background: none; outline: none; width: 100%; min-width: 0; font: inherit; color: var(--ink); }
+.datewrap { position: relative; }
+.datebtn { appearance: none; display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-weight: 600; font-size: 0.84rem; font-variant-numeric: tabular-nums; cursor: pointer; white-space: nowrap; }
+.pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; display: grid; gap: 8px; width: 240px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); font-size: 0.82rem; }
+.iconbtn { appearance: none; position: relative; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 10px; background: none; color: var(--ink-2); cursor: pointer; }
+.iconbtn:hover { background: var(--sunken); }
+.iconbtn .dot { position: absolute; top: 9px; right: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--bad); box-shadow: 0 0 0 2px var(--surface); }
+.user { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); font-weight: 800; font-size: 0.82rem; }
+.user strong { display: block; font-size: 0.86rem; line-height: 1.2; }
+.user span { display: block; font-size: 0.74rem; color: var(--muted); }
+
+/* Conteúdo */
+.content { padding: 24px 28px 48px; padding-right: max(28px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px; align-content: start; }
+.page { display: grid; gap: 20px; }
+.ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 20px; }
+.ph-t { display: flex; align-items: center; gap: 14px; }
+.ph h1 { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.01em; }
+.ph p { color: var(--muted); font-size: 0.88rem; }
+.notice { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--primary-line); background: var(--primary-soft); font-size: 0.85rem; }
+.notice .ic { color: var(--primary); margin-top: 2px; }
+.link { appearance: none; border: 0; background: none; padding: 0; color: var(--primary); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.rodape { color: var(--muted); font-size: 0.76rem; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); min-width: 0; }
+.ch { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 16px 20px 12px; }
+.ch h2 { font-size: 1rem; font-weight: 700; }
+.ch p { font-size: 0.78rem; color: var(--muted); }
+.ch .more { margin-left: auto; }
+.cb { padding: 4px 20px 18px; display: grid; gap: 12px; }
+.tile { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; flex: none; background: var(--primary-soft); color: var(--primary); }
+.tile.sm { width: 32px; height: 32px; border-radius: 8px; }
+.tile.gold { background: var(--gold-soft); color: var(--gold-ink); }
+.tile.bad { background: var(--bad-soft); color: var(--bad); }
+.tile.good { background: var(--good-soft); color: var(--good); }
+.tile.warn { background: var(--warn-soft); color: var(--warn); }
+.linkbtn { appearance: none; border: 0; background: none; padding: 4px 0; color: var(--primary); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+.btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-weight: 600; font-size: 0.84rem; white-space: nowrap; cursor: pointer; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.sm { padding: 5px 10px; font-size: 0.78rem; border-radius: 8px; }
+input[type="number"], input[type="date"], input[type="text"], select { font: 500 0.85rem var(--font); font-variant-numeric: tabular-nums; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; min-height: 36px; min-width: 0; }
+input:hover, select:hover { border-color: var(--muted); }
+
+/* KPIs */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.kpi { display: flex; gap: 14px; align-items: flex-start; padding: 18px; }
+.kpi > .tile { width: 48px; height: 48px; border-radius: 12px; }
+.kpi-b { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.kpi-l { display: flex; align-items: center; gap: 6px; font-size: 0.92rem; font-weight: 700; }
+.kpi-l .help { display: inline-flex; color: var(--muted); cursor: help; }
+.kpi-v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.kpi-v strong { font-size: 2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+.kpi-v span { font-size: 0.8rem; color: var(--muted); }
+.kpi-s { font-size: 0.76rem; color: var(--muted); line-height: 1.4; }
+.falta-box { flex: none; align-self: center; text-align: center; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); font-size: 0.72rem; color: var(--muted); }
+.falta-box b { display: block; font-size: 1.45rem; font-weight: 800; color: var(--ink); line-height: 1.2; }
+
+/* Avanço */
+.prog { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 14px 20px; }
+.prog h3 { font-size: 0.92rem; font-weight: 700; }
+.pbar-w { position: relative; flex: 1; min-width: 240px; padding: 24px 0 34px; }
+.pbar { height: 12px; border-radius: 999px; background: var(--sunken); overflow: hidden; }
+.pbar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--primary), var(--primary-2)); }
+.plab { position: absolute; top: 0; transform: translateX(-50%); font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+.ptick { position: absolute; top: 20px; height: 20px; width: 2px; margin-left: -1px; background: var(--ink-2); opacity: 0.55; }
+.ptick.alvo { background: var(--gold); opacity: 1; }
+.pname { position: absolute; top: 42px; transform: translateX(-50%); font-size: 0.7rem; line-height: 1.2; text-align: center; color: var(--muted); white-space: nowrap; }
+.pname.alvo { color: var(--gold-ink); font-weight: 700; }
+.pct-box { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 12px; background: var(--gold-soft); }
+.pct-box b { font-size: 1.5rem; font-weight: 800; color: var(--gold-ink); }
+.pct-box span { font-size: 0.74rem; color: var(--ink-2); max-width: 110px; line-height: 1.3; }
+
+/* Tabelas */
+.tw { overflow-x: auto; }
+.t { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.t th, .t td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+.t thead th { font-size: 0.74rem; font-weight: 700; color: var(--ink-2); background: var(--surface-2); }
+.t tbody tr:last-child > * { border-bottom: 0; }
+.t tbody tr:hover > * { background: var(--surface-2); }
+.t th:first-child, .t td:first-child { padding-left: 20px; }
+.t th:last-child, .t td:last-child { padding-right: 20px; }
+.t .n { text-align: right; font-variant-numeric: tabular-nums; }
+.t .wrap { white-space: normal; }
+.iname { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.iname .ic { color: var(--primary); }
+.iname small { font-weight: 500; color: var(--muted); font-size: 0.8rem; }
+.t.compact th, .t.compact td { padding: 9px 8px; }
+.t.compact th:first-child, .t.compact td:first-child { padding-left: 20px; }
+.t.compact th:last-child, .t.compact td:last-child { padding-right: 16px; }
+.meter { display: flex; align-items: center; gap: 8px; min-width: 120px; }
+.meter b { width: 42px; text-align: right; font-variant-numeric: tabular-nums; }
+.meter .bar { flex: 1; min-width: 48px; height: 8px; border-radius: 999px; background: var(--sunken); overflow: hidden; }
+.meter .bar i { display: block; height: 100%; border-radius: 999px; background: var(--muted); }
+.st-alvo .bar i { background: var(--bar-good); }
+.st-atencao .bar i { background: var(--bar-warn); }
+.st-critico .bar i { background: var(--bar-bad); }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; white-space: nowrap; }
+.chip.alvo, .chip.ok { background: var(--good-soft); color: var(--good); }
+.chip.atencao, .chip.media { background: var(--warn-soft); color: var(--warn); }
+.chip.critico, .chip.alta, .chip.erro { background: var(--bad-soft); color: var(--bad); }
+.chip.sem, .chip.ex { background: var(--sunken); color: var(--ink-2); }
+.chip.baixa, .chip.info { background: var(--primary-soft); color: var(--primary); }
+.spark { display: block; overflow: visible; }
+.spark path { fill: none; stroke: var(--primary-2); stroke-width: 1.6; }
+.spark circle { fill: var(--primary); }
+
+/* Grades */
+.g-dash1 { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
+.g-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.g-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.g-sim { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
+.g-imp { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(250px, 0.8fr); gap: 20px; }
+.stack { display: grid; gap: 20px; align-content: start; }
+
+/* Recomendações e listas */
+.recs { display: grid; gap: 10px; }
+.rec { appearance: none; display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-align: left; cursor: pointer; }
+.rec:hover { border-color: var(--primary-line); }
+.rec.first { background: var(--primary-soft); border-color: transparent; }
+.rec h3 { font-size: 0.86rem; font-weight: 700; }
+.rec p { font-size: 0.78rem; color: var(--ink-2); margin-top: 2px; line-height: 1.45; }
+.rec .chev { margin-left: auto; color: var(--muted); }
+.acts { list-style: none; margin: 0; padding: 0; display: grid; }
+.act { display: flex; align-items: center; gap: 12px; padding: 11px 0; }
+.act + .act { border-top: 1px solid var(--line); }
+.num { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; flex: none; font-size: 0.76rem; font-weight: 700; color: var(--ink-2); }
+.num.on { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.act p { flex: 1; font-size: 0.84rem; font-weight: 500; }
+.gaps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.gap { display: grid; grid-template-columns: 26px 20px minmax(0, 1fr) 90px minmax(60px, 1fr); align-items: center; gap: 10px; padding: 8px 0; }
+.gap + .gap { border-top: 1px solid var(--line); }
+.gap .ic { color: var(--primary); }
+.gap strong { font-size: 0.84rem; }
+.gap .gv { text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--bad); line-height: 1.2; font-variant-numeric: tabular-nums; }
+.gap .gv small { display: block; font-weight: 500; color: var(--muted); font-size: 0.7rem; }
+.exp { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.exp li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; }
+.exp b { display: block; font-size: 0.84rem; }
+.exp span { font-size: 0.78rem; color: var(--ink-2); line-height: 1.45; }
+
+/* Gráficos */
+.chart { position: relative; min-width: 0; }
+.chart svg { display: block; overflow: visible; }
+.chart text { font-family: var(--font); }
+.ax { fill: var(--muted); font-size: 11px; }
+.gl { stroke: var(--grid); stroke-width: 1; }
+.ln { fill: none; stroke: var(--primary); stroke-width: 2; }
+.ln.sim { stroke-dasharray: 5 4; }
+.area { fill: var(--primary); opacity: 0.08; }
+.pt { fill: var(--surface); stroke: var(--primary); stroke-width: 2; }
+.pt.sim { fill: var(--primary); }
+.vl { fill: var(--ink); font-size: 11px; font-weight: 700; }
+.ref { stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.reft { fill: var(--gold-ink); font-size: 11px; font-weight: 700; }
+.b-a { fill: var(--bar-before); }
+.b-b { fill: var(--primary); }
+.tip { position: absolute; z-index: 5; pointer-events: none; padding: 6px 10px; border-radius: 8px; background: var(--ink); color: var(--surface); font-size: 0.76rem; font-weight: 600; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); opacity: 0; }
+.tip.on { opacity: 1; }
+.donut-w { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; align-items: center; }
+.leg li > span:last-child { white-space: nowrap; }
+.donut-w svg circle { fill: none; }
+.dc-v { fill: var(--ink); font-size: 26px; font-weight: 800; }
+.dc-s { fill: var(--muted); font-size: 12px; }
+.leg { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: 0.76rem; }
+.leg li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 6px; align-items: center; }
+.leg i { width: 10px; height: 10px; border-radius: 3px; }
+.leg b { font-variant-numeric: tabular-nums; }
+.leg em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: 4px; }
+.leg-h { display: flex; gap: 14px; font-size: 0.78rem; color: var(--ink-2); margin-left: auto; }
+.leg-h span { display: inline-flex; align-items: center; gap: 6px; }
+.leg-h i { width: 10px; height: 10px; border-radius: 3px; }
+
+/* Indicadores */
+.filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; padding: 12px; }
+.fbox { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 180px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.fbox .ic { color: var(--primary); }
+.fbox label { display: grid; flex: 1; min-width: 0; font-size: 0.7rem; font-weight: 600; color: var(--muted); }
+.fbox select { border: 0; padding: 0; min-height: 0; background: none; font-weight: 700; color: var(--ink); width: 100%; }
+
+/* Simulador */
+.scen { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.scen > span { font-size: 0.82rem; font-weight: 700; color: var(--ink-2); margin-right: 2px; }
+.scen button { appearance: none; display: flex; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); text-align: left; cursor: pointer; }
+.scen button b { display: block; font-size: 0.84rem; }
+.scen button small { display: block; font-size: 0.7rem; color: var(--muted); }
+.scen button[aria-pressed="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); background: var(--primary-soft); }
+.scen .ic { color: var(--primary); }
+.simt input[type="range"] { width: 100%; min-width: 120px; accent-color: var(--primary); }
+.simt input[type="number"] { width: 112px; }
+.imp { display: inline-flex; padding: 3px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; background: var(--good-soft); color: var(--good); }
+.imp.zero { background: var(--sunken); color: var(--muted); }
+.imp.neg { background: var(--bad-soft); color: var(--bad); }
+.esf { background: var(--gold-soft); border-color: transparent; }
+.esf-act { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.esf-act strong { flex: 1; font-size: 0.86rem; }
+.esf p { font-size: 0.8rem; color: var(--ink-2); }
+.ins { list-style: none; margin: 0; padding: 0; display: grid; }
+.ins li { display: flex; align-items: center; gap: 12px; padding: 9px 0; font-size: 0.82rem; }
+.ins li + li { border-top: 1px solid var(--line); }
+.ins p { flex: 1; }
+
+/* Importações */
+.drop { display: grid; place-items: center; align-content: center; gap: 8px; min-height: 230px; padding: 24px 20px; text-align: center; border: 2px dashed var(--primary-line); border-radius: 12px; background: var(--surface-2); cursor: pointer; }
+.drop.over { border-color: var(--primary); background: var(--primary-soft); }
+.drop .tile { width: 56px; height: 56px; border-radius: 50%; }
+.drop strong { font-size: 0.95rem; }
+.drop small { color: var(--muted); font-size: 0.76rem; }
+.vgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.vbox { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
+.vbox b { display: block; font-size: 1.35rem; font-weight: 800; line-height: 1.2; }
+.vbox span { display: block; font-size: 0.76rem; color: var(--ink-2); }
+.vbox small { display: block; font-size: 0.7rem; color: var(--muted); }
+.stepsl { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.stepsl li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; }
+.stepsl b { display: block; font-size: 0.84rem; }
+.stepsl span { font-size: 0.76rem; color: var(--muted); }
+.tabs2 { display: flex; gap: 6px; padding: 0 20px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs2 button { appearance: none; display: flex; align-items: center; gap: 8px; padding: 13px 8px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font-weight: 700; font-size: 0.84rem; white-space: nowrap; cursor: pointer; }
+.tabs2 button[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
+.ftype { width: 28px; height: 28px; border-radius: 6px; display: inline-grid; place-items: center; flex: none; font-size: 0.56rem; font-weight: 800; color: var(--on-file); background: var(--xls); }
+.ftype.csv { background: var(--csv); }
+.ftype.ex { background: var(--muted); }
+.fname { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.maps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px 20px 20px; }
+.mapc { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.mapc h3 { display: flex; align-items: center; gap: 8px; padding: 12px 14px; font-size: 0.86rem; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.mapc h3 .chip { margin-left: auto; }
+.mapc .t th:first-child, .mapc .t td:first-child { padding-left: 14px; }
+.mapc .t th:last-child, .mapc .t td:last-child { padding-right: 14px; }
+.mapc select { width: 100%; min-width: 140px; max-width: 220px; }
+.am { color: var(--muted); font-size: 0.76rem; }
+.am.erro { color: var(--bad); }
+.falta-campo th { color: var(--bad); }
+.basebox { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.basebox .fld { display: grid; gap: 4px; }
+.basebox label, .fld label { font-size: 0.74rem; font-weight: 600; color: var(--muted); }
+.arrow { color: var(--muted); }
+.dias { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); }
+.dias b { font-size: 1.4rem; font-weight: 800; }
+.dias span { font-size: 0.74rem; color: var(--ink-2); max-width: 100px; line-height: 1.3; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 0.82rem; }
+.checks li { display: flex; gap: 10px; align-items: flex-start; }
+.checks .ic { color: var(--good); margin-top: 1px; }
+.msgs { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 0.82rem; }
+.msgs:empty { display: none; }
+.msgs .erro { color: var(--bad); }
+
+/* Alertas e configurações */
+.alerts { display: grid; gap: 12px; }
+.alert { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 16px 20px; }
+.alert-b { flex: 1; min-width: 220px; }
+.alert-b h3 { font-size: 0.92rem; font-weight: 700; }
+.alert-b p { font-size: 0.82rem; color: var(--ink-2); }
+.cfg input[type="number"] { width: 110px; }
+.cfg input[type="text"] { width: 100%; min-width: 160px; }
+.pr { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+.fld { display: grid; gap: 4px; min-width: 0; }
+.fld .un { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.8rem; }
+.fld .un input { flex: 1; width: 100%; }
+.erro-txt { color: var(--bad); font-size: 0.78rem; font-weight: 600; }
+
+/* Certificação: faixas, posição, QSC e apuração */
+.okc { color: var(--good); font-weight: 700; }
+.fx { display: inline-grid; place-items: center; min-width: 30px; height: 22px; padding: 0 7px; border-radius: 6px; font-size: 0.74rem; font-weight: 800; background: var(--sunken); color: var(--muted); }
+.fx5 { background: var(--good-soft); color: var(--good); }
+.fx4, .fx3 { background: var(--primary-soft); color: var(--primary); }
+.fx2, .fx1 { background: var(--warn-soft); color: var(--warn); }
+.fx0 { background: var(--bad-soft); color: var(--bad); }
+.fxc { text-align: center !important; line-height: 1.25; }
+.fxc b { font-weight: 700; }
+.fxc small { display: block; color: var(--muted); font-size: 0.7rem; }
+.t tbody tr > .fxc.ok, .t tbody tr:hover > .fxc.ok { background: var(--good-soft); }
+.fxc.cur { box-shadow: inset 0 0 0 2px var(--good); }
+.fxc.next { outline: 2px dashed var(--gold); outline-offset: -5px; }
+.t tbody tr.atual > *, .t tbody tr.atual:hover > * { background: var(--primary-soft); }
+.pos { display: grid; gap: 4px; padding: 16px 20px 8px; }
+.pos-h { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 4px; }
+.pos-h h3 { font-size: 0.95rem; font-weight: 700; }
+.pos-row { display: grid; grid-template-columns: 140px minmax(0, 1fr); align-items: center; gap: 16px; }
+.pos-l { font-size: 0.8rem; font-weight: 700; color: var(--ink-2); line-height: 1.3; }
+.pos-l small { font-weight: 500; color: var(--muted); }
+.pos-qsc { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 0 10px; }
+.pos-qsc .pos-l { width: 140px; margin-right: 8px; }
+.qsct input[type="number"] { width: 96px; text-align: right; }
+.qsct th small { display: block; font-weight: 500; color: var(--muted); font-size: 0.7rem; }
+.qsct tr.tot > * { background: var(--surface-2); font-weight: 700; }
+.nt { display: inline-grid; place-items: center; min-width: 34px; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; }
+.nt.t0 { background: var(--good-soft); color: var(--good); }
+.nt.t1 { background: var(--gold-soft); color: var(--gold-ink); }
+.nt.t2 { background: var(--warn-soft); color: var(--warn); }
+.nt.t3 { background: var(--bad-soft); color: var(--bad); }
+.g-qsc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.kpis.k3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.apt input[type="number"] { width: 112px; text-align: right; }
+.apt td.inel { background: var(--bad-soft); }
+.apt th small { display: block; margin-top: 3px; }
+.seg { display: inline-flex; flex-wrap: wrap; padding: 3px; border-radius: 10px; background: var(--sunken); gap: 2px; }
+.seg button { appearance: none; border: 0; background: none; padding: 7px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.cfg-t input[type="number"] { width: 100px; }
+.cfg-t input[type="text"] { min-width: 120px; }
+.duo { display: grid; gap: 4px; }
+.duo input { width: 100px; }
+.duo small { color: var(--muted); font-size: 0.68rem; }
+.ganho { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 0; align-items: center; }
+.ganho + .ganho { border-top: 1px solid var(--line); }
+.ganho b { font-size: 0.85rem; }
+.ganho span { font-size: 0.78rem; color: var(--ink-2); }
+.regl { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 0.82rem; }
+.regl li { display: flex; gap: 10px; align-items: flex-start; }
+.regl .ic { color: var(--primary); margin-top: 1px; }
+@media (max-width: 1320px) {
+  .g-qsc { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-qsc > :last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  .g-qsc, .kpis.k3 { grid-template-columns: minmax(0, 1fr); }
+  .g-qsc > :last-child { grid-column: auto; }
+  .pos-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav button, .btn, .rec, .tip { transition: background-color 0.15s, color 0.15s, border-color 0.15s, opacity 0.12s; }
+}
+@media (max-width: 1320px) {
+  .g-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-3 > :last-child { grid-column: 1 / -1; }
+  .g-imp { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-imp > :last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 1140px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-dash1, .g-sim { grid-template-columns: minmax(0, 1fr); }
+  .maps { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .logo small, .side-foot { display: none; }
+  .nav { display: flex; width: 100%; gap: 2px; overflow-x: auto; }
+  .nav button { padding: 8px 10px; white-space: nowrap; }
+  .top, .content { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .search { order: 5; width: 100%; }
+  .g-2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .kpis, .g-3, .g-imp, .vgrid { grid-template-columns: minmax(0, 1fr); }
+  .g-3 > :last-child, .g-imp > :last-child { grid-column: auto; }
+  .donut-w { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .donut-w .leg { width: 100%; }
+  .user div, .top-t span { display: none; }
+  .gap { grid-template-columns: 26px 20px minmax(0, 1fr) 84px; }
+  .gap .meter { display: none; }
+}
+</style>
+<link rel="stylesheet" href="tema-premium.css" id="tema-premium" disabled>
+
+<div class="app">
+  <aside class="side">
+    <div class="logo">
+      <img src="logo-sm-score.png" alt="SM Score · Radar de Certificação" width="222" height="76">
+    </div>
+    <nav class="nav" id="nav" aria-label="Menu principal"></nav>
+    <div class="side-foot">
+      <svg class="tower" id="tower" width="150" height="270" viewBox="0 0 150 270" aria-hidden="true"></svg>
+      <p>Conectando<br>pessoas a<br>mais resultados.</p>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="top-t"><strong>Radar da Certificação</strong><span>Certificação Convergente PME · Modelo Consultivo</span></div>
+      <label class="search"><i data-ic="search"></i><input type="search" id="busca" placeholder="Buscar indicador…" aria-label="Buscar indicador"></label>
+      <div class="datewrap">
+        <button type="button" class="datebtn" id="datebtn" aria-expanded="false" aria-controls="datepop"><i data-ic="calendar"></i><span id="periodo"></span><i data-ic="chevdown" data-s="16"></i></button>
+        <div class="pop" id="datepop" hidden>
+          <label for="corte"><b>Apurar até</b></label>
+          <input type="date" id="corte">
+          <button type="button" class="btn sm" id="corte-auto">Usar a data mais recente</button>
+          <b>Mês atual</b>
+          <div class="seg"><button type="button" data-modo="realizado">Realizado até hoje</button><button type="button" data-modo="projetado">Projetado</button></div>
+        </div>
+      </div>
+      <button type="button" class="iconbtn" data-ir="alertas" aria-label="Alertas"><i data-ic="bell" data-s="20"></i><span class="dot" id="bell-dot" hidden></span></button>
+      <div class="user"><span class="avatar" aria-hidden="true">FI</span><div><strong>Financeiro</strong><span>Gestão da certificação</span></div></div>
+    </header>
+
+    <main class="content">
+      <div class="notice" id="aviso" hidden></div>
+
+      <section class="page" id="dashboard" aria-label="Dashboard">
+        <div class="kpis" id="d-kpis"></div>
+        <div class="card" id="d-pos"></div>
+        <div class="g-dash1">
+          <section class="card">
+            <div class="ch"><span class="tile sm"><i data-ic="chart"></i></span><div><h2>Indicadores da Certificação</h2><p id="d-tab-sub"></p></div><button type="button" class="linkbtn more" data-ir="indicadores">Ver detalhes</button></div>
+            <div class="tw" id="d-tab"></div>
+          </section>
+          <section class="card">
+            <div class="ch"><span class="tile sm gold"><i data-ic="sparkle"></i></span><h2>Recomendações do Sistema</h2><button type="button" class="linkbtn more" data-ir="alertas">Ver alertas</button></div>
+            <div class="cb recs" id="d-recs"></div>
+          </section>
+        </div>
+        <div class="g-3">
+          <section class="card">
+            <div class="ch"><span class="tile sm"><i data-ic="trend"></i></span><div><h2>Evolução da Pontuação</h2><p>Média do ciclo acumulada mês a mês</p></div></div>
+            <div class="cb"><div class="chart" id="d-evol"></div></div>
+          </section>
+          <section class="card">
+            <div class="ch"><span class="tile sm"><i data-ic="pie"></i></span><h2>Pontos por Indicador</h2></div>
+            <div class="cb" id="d-contrib"></div>
+          </section>
+          <section class="card">
+            <div class="ch"><span class="tile sm gold"><i data-ic="list"></i></span><h2>Ações Prioritárias</h2></div>
+            <div class="cb" id="d-acoes"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page" id="indicadores" aria-label="Indicadores" hidden>
+        <div class="ph"><div><h1>Indicadores da Certificação</h1><p>Faixas, pontos e o que falta em cada indicador do ciclo.</p></div></div>
+        <div class="card filters">
+          <div class="fbox"><i data-ic="calendar"></i><label>Ciclo<select id="f-ciclo"></select></label></div>
+          <div class="fbox"><i data-ic="layers"></i><label>Bloco<select id="f-bloco"><option value="">Altas e Qualidade</option><option value="altas">Altas</option><option value="qualidade">Qualidade</option></select></label></div>
+          <div class="fbox"><i data-ic="target"></i><label>Situação<select id="f-sit"><option value="">Todas</option><option value="max">Na faixa máxima</option><option value="sobe">Pode subir de faixa</option><option value="risco">Em risco de cair</option></select></label></div>
+          <button type="button" class="linkbtn" id="f-limpar"><i data-ic="refresh" data-s="15"></i> Limpar filtros</button>
+        </div>
+        <div class="kpis" id="i-kpis"></div>
+        <section class="card">
+          <div class="ch"><span class="tile sm"><i data-ic="chart"></i></span><div><h2>Faixas e Pontuação</h2><p>Média do ciclo até agora. Verde: faixas atingidas; tracejado: próxima faixa.</p></div><button type="button" class="btn sm more" id="copiar"><i data-ic="copy" data-s="15"></i>Copiar tabela</button></div>
+          <div class="tw" id="i-tab"></div>
+        </section>
+        <div class="g-3">
+          <section class="card"><div class="ch"><span class="tile sm"><i data-ic="target"></i></span><div><h2>O que falta por indicador</h2><p id="i-gaps-sub"></p></div></div><div class="cb" id="i-gaps"></div></section>
+          <section class="card"><div class="ch"><span class="tile sm gold"><i data-ic="gem"></i></span><div><h2>Classificação</h2><p>Pontos, receita mínima e bônus de cada pedra</p></div></div><div class="tw" id="i-class"></div></section>
+          <section class="card"><div class="ch"><span class="tile sm gold"><i data-ic="bulb"></i></span><h2>Como funciona a pontuação</h2></div><div class="cb" id="i-exp"></div></section>
+        </div>
+      </section>
+
+      <section class="page" id="qualidade" aria-label="Qualidade" hidden>
+        <div class="ph"><div><h1>Qualidade · QSC</h1><p id="q-sub"></p></div></div>
+        <div class="kpis k3" id="q-kpis"></div>
+        <div class="g-qsc" id="q-cards"></div>
+        <div class="g-2">
+          <section class="card"><div class="ch"><span class="tile sm gold"><i data-ic="sparkle"></i></span><div><h2>Onde ganhar pontos no QSC</h2><p>Próxima faixa de cada componente, do maior ganho para o menor</p></div></div><div class="cb" id="q-ganhos"></div></section>
+          <section class="card"><div class="ch"><span class="tile sm"><i data-ic="shield"></i></span><h2>Regras do QSC</h2></div><div class="cb" id="q-regras"></div></section>
+        </div>
+      </section>
+
+      <section class="page" id="simulador" aria-label="Simulador" hidden>
+        <div class="ph">
+          <div><h1>Simulador do Ciclo</h1><p id="s-sub"></p></div>
+          <div class="scen" id="s-cen"></div>
+        </div>
+        <div class="kpis" id="s-kpis"></div>
+        <div class="g-sim">
+          <section class="card">
+            <div class="ch"><span class="tile sm"><i data-ic="chart"></i></span><div><h2>Resultado mensal nos meses restantes</h2><p>O valor vale para cada mês que falta no ciclo.</p></div><button type="button" class="btn sm more" id="s-reset"><i data-ic="refresh" data-s="15"></i>Voltar ao cenário</button></div>
+            <div class="tw" id="s-tab"></div>
+          </section>
+          <div class="stack">
+            <section class="card">
+              <div class="ch"><span class="tile sm"><i data-ic="chart"></i></span><div><h2>Antes x Depois</h2><p>% dos pontos máximos de cada indicador</p></div><div class="leg-h"><span><i style="background:var(--bar-before)"></i>Até agora</span><span><i style="background:var(--primary)"></i>Fechamento</span></div></div>
+              <div class="cb"><div class="chart" id="s-barras"></div></div>
+            </section>
+            <section class="card esf" id="s-esf"></section>
+          </div>
+        </div>
+        <div class="g-2">
+          <section class="card">
+            <div class="ch"><span class="tile sm"><i data-ic="trend"></i></span><div><h2>Pontuação no Cenário</h2><p>Média acumulada até agora · tracejado: fechamento simulado</p></div></div>
+            <div class="cb"><div class="chart" id="s-evol"></div></div>
+          </section>
+          <section class="card">
+            <div class="ch"><span class="tile sm gold"><i data-ic="bulb"></i></span><h2>Principais Insights</h2></div>
+            <div class="cb" id="s-ins"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page" id="apuracao" aria-label="Apuração do ciclo" hidden>
+        <div class="ph">
+          <div><h1>Apuração do Ciclo</h1><p id="ap-sub"></p></div>
+          <div class="seg" aria-label="Mês atual"><button type="button" data-modo="realizado">Realizado até hoje</button><button type="button" data-modo="projetado">Projetado para o mês</button></div>
+        </div>
+        <section class="card">
+          <div class="ch"><span class="tile sm"><i data-ic="calendar"></i></span><div><h2>Resultados mensais</h2><p>Meses fechados: digite os valores da base oficial. Mês atual: vem do relatório de altas e do QSC; digite para substituir.</p></div></div>
+          <div class="tw" id="ap-tab"></div>
+        </section>
+        <div class="g-2">
+          <section class="card"><div class="ch"><span class="tile sm gold"><i data-ic="trophy"></i></span><div><h2>Base oficial</h2><p>Última atualização semanal da certificação</p></div></div><div class="cb" id="ap-oficial"></div></section>
+          <section class="card"><div class="ch"><span class="tile sm"><i data-ic="bulb"></i></span><h2>Médias e arredondamento</h2></div>
+            <div class="cb"><ul class="regl">
+              <li><i data-ic="check" data-s="16"></i>Cada indicador usa a média mensal do ciclo semestral; a faixa é definida por essa média.</li>
+              <li><i data-ic="check" data-s="16"></i>Receitas: média arredondada para cima com 2 casas (63.999,9925 vira 64.000,00).</li>
+              <li><i data-ic="check" data-s="16"></i>QSC: média arredondada para cima sem casas (79,25 vira 80).</li>
+              <li><i data-ic="check" data-s="16"></i>Receita/FDV do mês: Receita Telecom do mês ÷ FDV elegível (CLT há mais de 90 dias).</li>
+              <li><i data-ic="check" data-s="16"></i>“Precisa por mês” considera os 6 meses do ciclo: o que já foi feito mais o valor necessário em cada mês restante.</li>
+            </ul></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="page" id="importacoes" aria-label="Importações" hidden>
+        <div class="ph"><div class="ph-t"><span class="tile"><i data-ic="upload" data-s="22"></i></span><div><h1>Central de Importação</h1><p>Carregue o relatório de altas do mês e o QSC exportado para atualizar a apuração.</p></div></div></div>
+        <div class="g-imp">
+          <section class="card cb" style="padding-top:18px">
+            <div class="drop" id="drop" role="button" tabindex="0" aria-label="Selecionar relatórios">
+              <span class="tile"><i data-ic="upload" data-s="26"></i></span>
+              <strong>Arraste e solte seus arquivos aqui</strong>
+              <span class="linkbtn">ou clique para selecionar</span>
+              <small>Relatório de altas (Excel ou CSV) e QSC exportado.<br>Os arquivos são lidos no navegador; nada é enviado.</small>
+            </div>
+            <input type="file" id="file-many" multiple accept=".xlsx,.xls,.csv,.txt" hidden>
+            <ul class="msgs" id="rep-msg" aria-live="polite"></ul>
+          </section>
+          <section class="card">
+            <div class="ch"><span class="tile sm"><i data-ic="chart"></i></span><div><h2>Validação do Arquivo</h2><p>Relatório de altas</p></div></div>
+            <div class="cb" id="v-box"></div>
+          </section>
+          <section class="card">
+            <div class="ch"><span class="tile sm gold"><i data-ic="bolt"></i></span><h2>Próximos Passos</h2></div>
+            <div class="cb">
+              <ol class="stepsl">
+                <li><span class="num on">1</span><div><b>Carregar as altas do mês</b><span>Excel ou CSV com data, produto e valor total.</span></div></li>
+                <li><span class="num">2</span><div><b>Conferir produtos e colunas</b><span>Veja em qual família cada produto entrou.</span></div></li>
+                <li><span class="num">3</span><div><b>Atualizar o QSC</b><span>Importe o QSC exportado ou digite os KPIs.</span></div></li>
+                <li><span class="num">4</span><div><b>Completar os meses fechados</b><span>Em Apuração do Ciclo, com a base oficial.</span></div></li>
+              </ol>
+            </div>
+          </section>
+        </div>
+        <section class="card">
+          <div class="tabs2" role="tablist" id="imp-tabs">
+            <button type="button" role="tab" data-tab="arquivos" aria-selected="true"><i data-ic="file" data-s="16"></i>Arquivos Recebidos</button>
+            <button type="button" role="tab" data-tab="produtos" aria-selected="false"><i data-ic="layers" data-s="16"></i>Produtos e Famílias</button>
+            <button type="button" role="tab" data-tab="mapa" aria-selected="false"><i data-ic="list" data-s="16"></i>Mapeamento de Colunas</button>
+            <button type="button" role="tab" data-tab="hist" aria-selected="false"><i data-ic="clock" data-s="16"></i>Histórico de Processamentos</button>
+          </div>
+          <div id="imp-body"></div>
+        </section>
+        <section class="card">
+          <div class="ch"><span class="tile sm good"><i data-ic="shield"></i></span><h2>Regras e Governança</h2></div>
+          <div class="cb">
+            <ul class="checks">
+              <li><i data-ic="check" data-s="16"></i>Os arquivos são lidos no próprio navegador; nada é enviado nem armazenado.</li>
+              <li><i data-ic="check" data-s="16"></i>Cada produto é classificado em Receita Telecom, Eletrônicos ou Novos Produtos pelas palavras definidas em Regras.</li>
+              <li><i data-ic="check" data-s="16"></i>Movimentos de cancelamento, estorno ou ajuste são descontados (altas líquidas).</li>
+              <li><i data-ic="check" data-s="16"></i>Produtos fora da região de atuação não contam na certificação: filtre o relatório antes de importar.</li>
+            </ul>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="alertas" aria-label="Alertas" hidden>
+        <div class="ph"><div><h1>Alertas e Recomendações</h1><p>Pontos de atenção gerados a partir da apuração atual.</p></div></div>
+        <div class="alerts" id="a-lista"></div>
+      </section>
+
+      <section class="page" id="regras" aria-label="Regras" hidden>
+        <div class="ph"><div><h1>Regras da Certificação</h1><p>Preenchidas com o Guia Rápido de Certificação (Convergente PME, Consultivo, ago/2026). Ajuste se o Manual trouxer valores diferentes.</p></div><button type="button" class="btn" id="cfg-reset"><i data-ic="refresh" data-s="15"></i>Restaurar o guia</button></div>
+        <div class="cfg stack" id="cfg"></div>
+      </section>
+
+      <p class="rodape">SM Score · Radar de Certificação · versão 1.0 (outubro/2026). Regras do Guia Rápido de Certificação (Convergente PME, ago/2026), de caráter consultivo: em caso de dúvida, vale o Manual de Certificação.</p>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script id="motor">
+"use strict";
+// ===== Utilidades (datas como número de dias desde 01/01/1970, sem fuso) =====
+const DIA = 86400000, EPS = 1e-9;
+const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const MESES_C = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const diaDe = (y, m, d) => Math.round(Date.UTC(y, m - 1, d) / DIA);
+const partes = n => { const t = new Date(n * DIA); return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate() }; };
+const p2 = x => String(x).padStart(2, '0');
+const fData = n => { const { y, m, d } = partes(n); return `${p2(d)}/${p2(m)}/${y}`; };
+const fDiaMes = n => { const { m, d } = partes(n); return `${p2(d)}/${p2(m)}`; };
+const isoDe = n => { const { y, m, d } = partes(n); return `${y}-${p2(m)}-${p2(d)}`; };
+const inicioMes = n => { const { y, m } = partes(n); return diaDe(y, m, 1); };
+const fimMes = n => { const { y, m } = partes(n); return diaDe(y, m + 1, 1) - 1; };
+const rotMes = (y, m) => `${MESES_C[m - 1]}/${String(y).slice(2)}`;
+const nf = (x, dec = 0) => Number(x).toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const fPct = (r, dec = 1) => nf(r * 100, dec) + '%';
+const fBRL = x => Number(x).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fBRLc = x => (Math.abs(x) >= 1e6 ? `R$ ${nf(x / 1e6, 2)} mi` : Math.abs(x) >= 1e4 ? `R$ ${nf(x / 1e3, 1)} mil` : fBRL(x));
+const pl = (n, um, varios) => `${nf(n)} ${n === 1 ? um : varios}`;
+const soma = a => a.reduce((s, x) => s + x, 0);
+const semAcento = s => String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const norm = s => semAcento(s).replace(/[^a-z0-9]/g, '');
+
+function lerData(v) {
+  if (v == null || v === '') return null;
+  if (typeof v === 'number') return v > 20000 && v < 80000 ? Math.floor(v) - 25569 : null; // número de série do Excel
+  if (v instanceof Date) return isNaN(v) ? null : Math.floor((v.getTime() - v.getTimezoneOffset() * 60000) / DIA);
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+  if (m) {
+    let y = +m[3]; if (y < 100) y += 2000;
+    const mes = +m[2], d = +m[1];
+    return mes >= 1 && mes <= 12 && d >= 1 && d <= 31 ? diaDe(y, mes, d) : null;
+  }
+  m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return diaDe(+m[1], +m[2], +m[3]);
+  m = s.match(/^(\d{1,2})[\/\-](\d{4})$/); // competência mm/aaaa
+  if (m && +m[1] >= 1 && +m[1] <= 12) return diaDe(+m[2], +m[1], 1);
+  if (/^\d+(\.\d+)?$/.test(s)) return lerData(+s);
+  return null;
+}
+function lerNumero(v) {
+  if (typeof v === 'number') return v;
+  let s = String(v ?? '').replace(/[R$\s ]/g, '');
+  if (!s) return null;
+  const neg = /^\(.*\)$/.test(s) || s.startsWith('-');
+  s = s.replace(/[()\-]/g, '');
+  if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, ''); // 96.441 = milhar
+  else if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else s = s.replace(/,/g, '');
+  const n = parseFloat(s);
+  return isNaN(n) ? null : neg ? -n : n;
+}
+const ativo = s => { const n = norm(s); return n.startsWith('ativ') || n === 'habilitado' || n === 'normal'; };
+
+// ===== Certificação Convergente PME · Modelo Consultivo (Guia Rápido de Certificação, ago/2026) =====
+const INDICADORES = [
+  { id: 'telecom', nome: 'Receita Telecom / TI Recorrente / Loc. Equip.', curto: 'Receita Telecom', bloco: 'altas', tipo: 'brl', icone: 'receipt', desc: 'Altas de Móvel, Fixa Básica (FTTH, Voz e TV), Fixa Avançada, TI Recorrente e Locação de Equipamentos, com impostos' },
+  { id: 'eletronicos', nome: 'Receita Eletrônicos / Equip. / One Shot', curto: 'Eletrônicos', bloco: 'altas', tipo: 'brl', icone: 'cart', desc: 'Aparelhos e acessórios móveis, revenda de equipamentos de TI e licenças one shot' },
+  { id: 'ftth', nome: 'Físicos FTTH', curto: 'Físicos FTTH', bloco: 'altas', tipo: 'qtd', icone: 'house', desc: 'Novas ativações de FTTH e Empresa 5G (FWA) e migrações de banda larga para FTTH' },
+  { id: 'novos', nome: 'Receita Novos Produtos', curto: 'Novos Produtos', bloco: 'altas', tipo: 'brl', icone: 'bolt', desc: 'Venda de Energia e Vale Saúde' },
+  { id: 'fdv', nome: 'Receita / FDV', curto: 'Receita/FDV', bloco: 'altas', tipo: 'brl', icone: 'users', desc: 'Receita Telecom do mês ÷ FDV elegível (consultores CLT há mais de 90 dias)' },
+  { id: 'qscCarteira', nome: 'QSC Carteira', curto: 'QSC Carteira', bloco: 'qualidade', tipo: 'nota', icone: 'shield', desc: 'Qualidade da gestão do parque (nota até 105)' },
+  { id: 'qscMovel', nome: 'QSC Móvel', curto: 'QSC Móvel', bloco: 'qualidade', tipo: 'nota', icone: 'phone', desc: 'Qualidade da venda móvel (nota até 100)' },
+  { id: 'qscFixa', nome: 'QSC Fixa', curto: 'QSC Fixa', bloco: 'qualidade', tipo: 'nota', icone: 'wifi', desc: 'Qualidade da venda de Fixa Básica / Banda Larga (nota até 100)' },
+];
+const IND = Object.fromEntries(INDICADORES.map(i => [i.id, i]));
+const ALTAS = ['telecom', 'eletronicos', 'ftth', 'novos'];
+const QSCS = ['qscCarteira', 'qscMovel', 'qscFixa'];
+const P5 = [200, 400, 600, 800, 1000], C5 = [100, 200, 300, 400, 500], Q5 = [50, 60, 70, 80, 90];
+const comp = (id, nome, dir, lims, pts, alias) => ({ id, nome, dir, lims, pts, alias });
+const REGRAS_EXEMPLO = {
+  ind: {
+    telecom: { faixas: [16000, 32000, 48000, 64000, 80000], pontos: [1300, 2600, 3900, 5200, 6500] },
+    eletronicos: { faixas: [40000, 88000, 145000, 250000, 350000], pontos: C5 },
+    ftth: { faixas: [35, 45, 60, 120, 240], pontos: P5 },
+    novos: { faixas: [2800, 5600, 8400, 11200, 14000], pontos: C5 },
+    fdv: { faixas: [300, 600, 900, 1200, 1500], pontos: C5 },
+    qscCarteira: { faixas: Q5, pontos: P5 },
+    qscMovel: { faixas: Q5, pontos: P5 },
+    qscFixa: { faixas: Q5, pontos: P5 },
+  },
+  classes: [
+    { nome: 'Bronze', min: 0, receita: 0, bonus: 0, qsc: false, eleg: 35 },
+    { nome: 'Prata', min: 4200, receita: 0, bonus: 2.5, qsc: false, eleg: 35 },
+    { nome: 'Ouro', min: 6000, receita: 40000, bonus: 5, qsc: false, eleg: 35 },
+    { nome: 'Diamante', min: 7800, receita: 65000, bonus: 7.5, qsc: true, eleg: 45 },
+    { nome: 'Platinum', min: 9600, receita: 100000, bonus: 10, qsc: true, eleg: 60 },
+    { nome: 'V', min: 10800, receita: 200000, bonus: 12.5, qsc: true, eleg: 60 },
+  ],
+  qscMin: 70,          // nota mínima em todos os QSC para Diamante, Platinum e V
+  vigente: 'Diamante', // pedra atual do parceiro, define a elegibilidade mínima do QSC Fixa
+  qsc: {
+    qscCarteira: [
+      comp('churnMovel', 'Churn Móvel', 'menor', [0.8, 1.1, 1.4], [10, 7, 5, 0], ['churnmovel']),
+      comp('churnBL', 'Churn Banda Larga', 'menor', [1.4, 1.7, 2.0], [20, 14, 10, 0], ['churnbl', 'churnbandalarga']),
+      comp('dauto', 'Parque com Débito Automático', 'maior', [25, 20, 15], [5, 3, 1, 0], ['parquecomdauto', 'parquecomdebitoautomatico']),
+      comp('fidel', 'Fidelização Móvel', 'maior', [85, 80, 75], [20, 14, 10, 0], ['pqfidelizado', 'fidelizacaomovel', 'parquefidelizado']),
+      comp('invasao', 'Invasão Carteira', 'menor', [10, 20, 25], [25, 20, 15, 0], ['invasaocarteira']),
+      comp('car', 'CAR', 'menor', [15, 20, 25], [10, 7, 5, 0], ['car']),
+      comp('biometria', 'Cadastro com Biometria', 'maior', [70, 55, 40], [10, 7, 5, 0], ['parquebiometrado', 'cadastrocombiometria']),
+      comp('aproveit', 'Bônus Aproveitamento de Carteira', 'maior', [10, 7, 5], [5, 3, 1, 0], ['aproveitamento']),
+    ],
+    qscMovel: [
+      comp('ec', 'Early Churn', 'menor', [10, 15, 20], [30, 23, 18, 0], ['ecscore', 'earlychurnmovel']),
+      comp('totaliz', 'Totalização', 'maior', [50, 40, 25], [15, 10, 7, 0], ['totalizacaoscore', 'totalizacaomovel']),
+      comp('digital', 'Digitalização', 'maior', [8, 6, 4], [15, 10, 7, 0], ['digitalizacaoscore', 'digitalizacaomovel']),
+      comp('porta', 'Saldo Portabilidade / Altas', 'maior', [50, 25, 0], [20, 14, 0, -10], ['portabilidadescore', 'saldoportabilidade']),
+      comp('tfp', 'TFP (Três Faturas Pagas)', 'maior', [90, 85, 80], [20, 14, 10, 0], ['tfpmovel']),
+    ],
+    qscFixa: [
+      comp('ec', 'Early Churn', 'menor', [10, 12.5, 17.5], [20, 14, 10, 0], ['earlychurn', 'earlychurnbl']),
+      comp('totaliz', 'Totalização', 'maior', [20, 15, 10], [20, 10, 7, 0], ['totalizacaodasaltas', 'totalizacaobl']),
+      comp('digital', 'Digitalização', 'maior', [6, 4, 2], [5, 3, 1, 0], ['digitalizacaodasaltas', 'digitalizacaobl']),
+      comp('realta', 'Realtas', 'menor', [2, 3, 4], [15, 10, 7, 0], ['realta', 'realtas']),
+      comp('tfp', 'TFP (Três Faturas Pagas)', 'maior', [90, 85, 80], [20, 14, 10, 0], ['tfpbl']),
+      comp('aceite', 'Qualidade do Aceite', 'maior', [95, 90, 85], [20, 14, 10, 0], ['qualidadeaceite', 'qualidadedoaceite']),
+    ],
+  },
+  palavras: {
+    novos: 'energia, vale saude',
+    locacao: 'locacao, comodato',
+    eletronicos: 'aparelho, smartphone, celular, acessorio, revenda, equipamento, notebook, tablet, one shot, perpetua',
+    telecom: 'movel, ftth, fibra, banda larga, voz, tv, fixa, dados, link, internet, sip, 0800, ti recorrente, microsoft, office, workspace, empresa 5g, fwa',
+    ftth: 'ftth, fibra, empresa 5g, fwa',
+  },
+};
+
+const RELATORIOS = [
+  { key: 'altas', nome: 'Altas do mês', desc: 'Vendas ativadas no mês com produto e valor total (com impostos).', usa: 'Receita Telecom, Eletrônicos, Físicos FTTH, Novos Produtos e Receita/FDV', data: 'data',
+    campos: [
+      { key: 'data', label: 'Data da ativação', tipo: 'data', req: true, alias: ['datadaativacao', 'dataativacao', 'dtativacao', 'datadaalta', 'dataalta', 'datadavenda', 'datavenda', 'dtvenda', 'datainstalacao', 'data'] },
+      { key: 'produto', label: 'Produto', tipo: 'texto', req: true, alias: ['produto', 'descricaodoproduto', 'descricao', 'plano', 'oferta', 'servico', 'familia', 'categoria'] },
+      { key: 'valor', label: 'Valor total (com impostos)', tipo: 'valor', req: true, alias: ['valortotal', 'valorcomimpostos', 'valor', 'receita', 'vlrtotal', 'vlr', 'total'] },
+      { key: 'qtd', label: 'Quantidade', tipo: 'valor', req: false, alias: ['quantidade', 'qtde', 'qtd', 'linhas', 'acessos'] },
+      { key: 'mov', label: 'Movimento', tipo: 'texto', req: false, alias: ['movimento', 'tipodemovimento', 'operacao', 'tipo'] },
+    ] },
+];
+const DEF = Object.fromEntries(RELATORIOS.map(d => [d.key, d]));
+
+function autoMapear(cabecalhos, campos) {
+  const n = cabecalhos.map(norm), usados = new Set(), mapa = {};
+  for (const modo of ['igual', 'contem']) {
+    for (const c of campos) {
+      if (mapa[c.key]) continue;
+      for (const a of c.alias) {
+        const j = n.findIndex((h, k) => !usados.has(k) && (modo === 'igual' ? h === a : h.includes(a)));
+        if (j >= 0) { mapa[c.key] = cabecalhos[j]; usados.add(j); break; }
+      }
+    }
+  }
+  return mapa;
+}
+function classificar(cabecalhos) {
+  let melhor = null;
+  for (const def of RELATORIOS) {
+    const mapa = autoMapear(cabecalhos, def.campos);
+    if (!def.campos.every(c => !c.req || mapa[c.key])) continue;
+    const peso = c => (c.req ? 2 : 1);
+    const nota = soma(def.campos.map(c => (mapa[c.key] ? peso(c) : 0))) / soma(def.campos.map(peso))
+      + def.campos.filter(c => c.req).length * 0.01; // desempate: o mais específico ganha
+    if (!melhor || nota > melhor.nota) melhor = { key: def.key, mapa, nota };
+  }
+  return melhor;
+}
+const pronto = (key, r) => !!(r && r.linhas && DEF[key].campos.every(c => !c.req || r.mapa[c.key]));
+
+function lerCSV(txt) {
+  txt = txt.replace(/^﻿/, '');
+  const fim = txt.indexOf('\n'), prim = fim > -1 ? txt.slice(0, fim) : txt;
+  const sep = [';', ',', '\t'].map(c => [c, prim.split(c).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const linhas = [];
+  let row = [], cel = '', q = false;
+  for (let i = 0; i < txt.length; i++) {
+    const ch = txt[i];
+    if (q) { if (ch === '"') { if (txt[i + 1] === '"') { cel += '"'; i++; } else q = false; } else cel += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === sep) { row.push(cel); cel = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && txt[i + 1] === '\n') i++; row.push(cel); linhas.push(row); row = []; cel = ''; }
+    else cel += ch;
+  }
+  if (cel !== '' || row.length) { row.push(cel); linhas.push(row); }
+  return linhas;
+}
+function tabular(aoa) { // acha a linha de cabeçalho (relatórios costumam ter título antes) e monta objetos
+  aoa = aoa.filter(r => r && r.some(c => String(c ?? '').trim() !== ''));
+  if (!aoa.length) throw new Error('o arquivo está vazio.');
+  let h = 0, max = -1;
+  for (let i = 0; i < Math.min(15, aoa.length); i++) {
+    const n = aoa[i].filter(c => typeof c === 'string' && c.trim() && !/^[\d.,\/\-: R$%]+$/.test(c.trim())).length;
+    if (n > max) { max = n; h = i; }
+  }
+  const vistos = {};
+  const cab = aoa[h].map((c, j) => {
+    let s = String(c ?? '').trim() || `Coluna ${j + 1}`;
+    if (vistos[s]) s = `${s} (${++vistos[s]})`; else vistos[s] = 1;
+    return s;
+  });
+  let largura = 0;
+  for (let i = h; i < aoa.length; i++) largura = Math.max(largura, aoa[i].length);
+  for (let j = cab.length; j < largura; j++) cab.push(`Coluna ${j + 1}`);
+  const linhas = [];
+  for (let i = h + 1; i < aoa.length; i++) { const r = aoa[i], o = {}; cab.forEach((c, j) => { o[c] = r[j] ?? ''; }); linhas.push(o); }
+  return { cabecalhos: cab, linhas };
+}
+const valorOk = (c, v) => (c.tipo === 'data' ? lerData(v) != null : c.tipo === 'valor' ? lerNumero(v) != null : String(v ?? '').trim() !== '');
+function validar(key, r, corte) {
+  const def = DEF[key], m = r.mapa, req = def.campos.filter(c => c.req), ini = inicioMes(corte);
+  const out = { total: r.linhas.length, validas: 0, dup: 0, faltando: 0, fora: 0 };
+  const vistos = new Set();
+  for (const row of r.linhas) {
+    const assin = r.cabecalhos.map(h => row[h]).join('\u0001');
+    if (vistos.has(assin)) { out.dup++; continue; }
+    vistos.add(assin);
+    if (!req.every(c => m[c.key] && valorOk(c, row[m[c.key]]))) { out.faltando++; continue; }
+    out.validas++;
+    if (def.data) { const d = lerData(row[m[def.data]]); if (d < ini || d > corte) out.fora++; }
+  }
+  return out;
+}
+
+// ===== Ciclo semestral =====
+const chaveMes = d => { const { y, m } = partes(d); return `${y}-${p2(m)}`; };
+const rotChave = k => { const [y, m] = k.split('-').map(Number); return rotMes(y, m); };
+function cicloDe(corte) {
+  const { y, m } = partes(corte), s = m <= 6 ? 1 : 2, m0 = s === 1 ? 1 : 7;
+  return { meses: [0, 1, 2, 3, 4, 5].map(i => `${y}-${p2(m0 + i)}`), atual: chaveMes(corte), nome: `${s}º ciclo ${y}`, rot: `${s === 1 ? 'Jan–Jun' : 'Jul–Dez'}/${y}` };
+}
+
+// ===== Relatório de altas =====
+const lista = s => semAcento(s).split(',').map(x => x.trim()).filter(Boolean);
+function familia(prod, R) {
+  const n = semAcento(prod), tem = k => lista(R.palavras[k]).some(p => n.includes(p));
+  if (tem('novos')) return 'novos';
+  if (tem('locacao')) return 'telecom';
+  if (tem('eletronicos')) return 'eletronicos';
+  if (tem('telecom')) return 'telecom';
+  return 'outro';
+}
+const ehFtth = (prod, R) => { const n = semAcento(prod); return lista(R.palavras.ftth).some(p => n.includes(p)); };
+const negativo = mov => /cancel|estorno|ajuste|desist/.test(semAcento(mov));
+function extrairAltas(rep, R, corte) {
+  const ini = inicioMes(corte), n = Math.max(1, corte - ini + 1);
+  const A = { ok: pronto('altas', rep), telecom: 0, eletronicos: 0, ftth: 0, novos: 0, outro: 0, produtos: new Map() };
+  if (!A.ok) return A;
+  const m = rep.mapa;
+  for (const row of rep.linhas) {
+    const d = lerData(row[m.data]);
+    if (d == null || d < ini || d > corte) continue;
+    const prod = String(row[m.produto] ?? '').trim() || '(sem produto)', fam = familia(prod, R), sinal = m.mov && negativo(row[m.mov]) ? -1 : 1;
+    const v = (lerNumero(row[m.valor]) || 0) * sinal, q = (m.qtd ? lerNumero(row[m.qtd]) ?? 1 : 1) * sinal, f = fam === 'telecom' && ehFtth(prod, R);
+    A[fam] += v;
+    if (f) A.ftth += q;
+    const p = A.produtos.get(prod) || { prod, fam, ftth: f, linhas: 0, qtd: 0, valor: 0 };
+    p.linhas++; p.qtd += q; p.valor += v;
+    A.produtos.set(prod, p);
+  }
+  A.dias = n;
+  return A;
+}
+
+// ===== QSC =====
+function notaComp(c, k1, k2) {
+  if (k1 == null || k2 == null || !(k2 > 0)) return { pct: null, nota: null, tier: null };
+  const pct = k1 / k2 * 100;
+  let t = 3;
+  for (let i = 0; i < 3; i++) if (c.dir === 'maior' ? pct >= c.lims[i] - 1e-9 : pct < c.lims[i] - 1e-9) { t = i; break; }
+  return { pct, nota: c.pts[t], tier: t };
+}
+function notaQsc(id, dados, R) {
+  const comps = R.qsc[id].map(c => ({ c, ...notaComp(c, ...((dados || {})[c.id] || [])) }));
+  const ok = comps.filter(x => x.nota != null);
+  return { comps, nota: ok.length ? soma(ok.map(x => x.nota)) : null, completo: ok.length === comps.length };
+}
+const maxNota = (id, R) => soma(R.qsc[id].map(c => Math.max(...c.pts)));
+
+// ===== Apuração do ciclo =====
+const minEleg = R => (R.classes.find(c => c.nome === R.vigente) || R.classes[0]).eleg;
+function valoresCiclo(ci, manual, atual, R) {
+  const out = {};
+  for (const k of ci.meses) {
+    if (k > ci.atual) { out[k] = { futuro: true }; continue; }
+    const man = manual[k] || {}, base = k === ci.atual ? atual : {}, v = { atual: k === ci.atual };
+    for (const c of [...ALTAS, 'fdvQtd', ...QSCS]) v[c] = man[c] != null ? man[c] : base[c] != null ? base[c] : null;
+    v.manual = Object.keys(man).some(c => man[c] != null && c !== 'fonte');
+    v.fdv = v.telecom != null && v.fdvQtd > 0 ? v.telecom / v.fdvQtd : null;
+    v.elegFixa = v.ftth == null || v.ftth >= minEleg(R);
+    v.qscFixaEf = v.qscFixa != null && !v.elegFixa ? 0 : v.qscFixa;
+    out[k] = v;
+  }
+  return out;
+}
+const campoEf = (id, v) => (id === 'qscFixa' ? v.qscFixaEf : v[id]);
+const arred = (id, x) => (IND[id].tipo === 'nota' ? Math.ceil(x - 1e-9) : Math.ceil(x * 100 - 1e-6) / 100);
+function mediaCiclo(id, ci, vm, ate) {
+  const vals = ci.meses.filter(k => k <= ate && !vm[k].futuro).map(k => campoEf(id, vm[k])).filter(x => x != null);
+  if (!vals.length) return { media: null, soma: 0, n: 0, vals };
+  const s = soma(vals);
+  return { media: arred(id, s / vals.length), bruta: s / vals.length, soma: s, n: vals.length, vals };
+}
+function faixaInd(id, x, R) { let L = 0; if (x != null) R.ind[id].faixas.forEach((t, i) => { if (x >= t - 1e-9) L = i + 1; }); return L; }
+const maxPontos = R => soma(INDICADORES.map(i => Math.max(...R.ind[i.id].pontos)));
+function classificacao(total, por, R) {
+  const C = R.classes, rec = por.telecom.media ?? 0, qscOk = QSCS.every(id => (por[id].media ?? 0) >= R.qscMin);
+  let kPts = 0, kRec = 0, kQsc = C.length - 1;
+  C.forEach((c, k) => { if (total >= c.min) kPts = k; if (rec >= c.receita - 1e-9) kRec = k; });
+  if (!qscOk) { kQsc = 0; C.forEach((c, k) => { if (!c.qsc) kQsc = k; }); }
+  const k = Math.min(kPts, kRec, kQsc);
+  return { k, kPts, kRec, kQsc, qscOk, rec, classe: C[k], prox: C[k + 1] || null };
+}
+function apurar(ci, vm, R, ate) {
+  const por = {};
+  let total = 0;
+  for (const i of INDICADORES) {
+    const mc = mediaCiclo(i.id, ci, vm, ate), L = faixaInd(i.id, mc.media, R), pts = L ? R.ind[i.id].pontos[L - 1] : 0;
+    por[i.id] = { ...mc, L, pts, max: Math.max(...R.ind[i.id].pontos) };
+    total += pts;
+  }
+  return { por, total, ...classificacao(total, por, R) };
+}
+function requisitos(res, R) {
+  const p = res.prox, out = [];
+  if (!p) return out;
+  if (res.total < p.min) out.push({ tipo: 'pontos', falta: p.min - res.total });
+  if (res.rec < p.receita) out.push({ tipo: 'receita', falta: p.receita - res.rec, alvo: p.receita });
+  if (p.qsc) QSCS.forEach(id => { if ((res.por[id].media ?? 0) < R.qscMin) out.push({ tipo: 'qsc', id, falta: R.qscMin - (res.por[id].media ?? 0) }); });
+  return out;
+}
+// Valor mensal, nos meses que faltam, para a média final do ciclo chegar a "alvo"
+function precisaPorMes(id, alvo, ci, vm) {
+  const N = ci.meses.length, rest = ci.meses.filter(k => vm[k].futuro).length;
+  const s = soma(ci.meses.filter(k => !vm[k].futuro).map(k => campoEf(id, vm[k]) ?? 0));
+  const A = IND[id].tipo === 'nota' ? alvo - 1 + 0.001 : alvo - 0.009;
+  if (!rest) return { rest: 0, valor: null, garantido: s / N >= A };
+  const v = (N * A - s) / rest;
+  return { rest, valor: Math.max(0, Math.ceil(v - 1e-9)), garantido: v <= 0 };
+}
+function vmComFuturo(ci, vm, fut, R) {
+  const out = { ...vm };
+  for (const k of ci.meses) if (vm[k].futuro) {
+    const v = { sim: true };
+    for (const i of INDICADORES) v[i.id] = fut[i.id] ?? null;
+    v.elegFixa = v.ftth == null || v.ftth >= minEleg(R);
+    v.qscFixaEf = v.qscFixa != null && !v.elegFixa ? 0 : v.qscFixa;
+    out[k] = v;
+  }
+  return out;
+}
+function cenarioFuturo(nome, ci, vm) {
+  const out = {};
+  for (const i of INDICADORES) {
+    const vals = ci.meses.filter(k => !vm[k].futuro).map(k => campoEf(i.id, vm[k])).filter(x => x != null);
+    if (!vals.length) { out[i.id] = null; continue; }
+    const x = nome === 'conservador' ? Math.min(...vals) : nome === 'agressivo' ? Math.max(...vals) : soma(vals) / vals.length;
+    out[i.id] = i.tipo === 'brl' ? Math.round(x * 100) / 100 : Math.round(x);
+  }
+  return out;
+}
+
+// ===== Dados de exemplo =====
+// Meses fechados ilustrativos; o QSC de outubro reproduz o relatório QSC de 202610 enviado pelo usuário.
+const MESES_EXEMPLO = {
+  '2026-07': { telecom: 79300, eletronicos: 342000, ftth: 252, novos: 0, fdvQtd: 60, qscCarteira: 84, qscMovel: 90, qscFixa: 85 },
+  '2026-08': { telecom: 83400, eletronicos: 371000, ftth: 268, novos: 1200, fdvQtd: 61, qscCarteira: 88, qscMovel: 88, qscFixa: 90 },
+  '2026-09': { telecom: 86900, eletronicos: 365000, ftth: 247, novos: 900, fdvQtd: 61, qscCarteira: 85, qscMovel: 91, qscFixa: 88 },
+  '2026-10': { fdvQtd: 60 },
+};
+const QSC_EXEMPLO = {
+  qscFixa: { realta: [1, 133], ec: [8, 108], totaliz: [34, 128], tfp: [216, 244], digital: [3, 129], aceite: [75, 86] },
+  qscMovel: { ec: [64, 829], porta: [308, 519], totaliz: [41, 61], tfp: [553, 607], digital: [12, 281] },
+  qscCarteira: { churnMovel: [112, 96441], churnBL: [74, 13684], dauto: [4362, 31233], fidel: [77996, 96441], invasao: [5, 359], car: [4747, 35744], biometria: [18187, 35744], aproveit: [85, 7157] },
+};
+function gerarAltasExemplo() {
+  const ini = diaDe(2026, 10, 1), linhas = [], brl = x => x.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  let ped = 2610001;
+  const add = (k, n, produto, qtd, valor, mov = 'Alta') => linhas.push({ 'Data da Ativação': fData(ini + Math.floor(k * 26 / n)), 'Nº Pedido': 'PV-' + ped++, 'Produto': produto, 'Quantidade': String(qtd), 'Valor Total': brl(valor), 'Movimento': mov });
+  const FT = ['Fibra (FTTH) 300 Mega', 'Fibra (FTTH) 500 Mega', 'Fibra (FTTH) 700 Mega', 'Fibra (FTTH) 1 Giga'], FP = [99.9, 129.9, 149.9, 199.9];
+  for (let k = 0; k < 214; k++) add(k, 214, FT[k % 4], 1, FP[k % 4], k < 200 ? 'Alta' : 'Migração');
+  const MV = ['Móvel Smart Empresas 10GB', 'Móvel Smart Empresas 20GB', 'Móvel Smart Empresas 50GB', 'Móvel Smart Empresas 100GB'], MPr = [59.9, 79.9, 99.9, 129.9], MQ = [2, 4, 6, 3, 5];
+  for (let j = 0; j < 100; j++) add(j, 100, MV[j % 4], MQ[j % 5], MQ[j % 5] * MPr[j % 4]);
+  for (let j = 0; j < 10; j++) add(j, 10, 'Voz Fixa Empresas', 1, 189.9);
+  for (let j = 0; j < 5; j++) add(j, 5, 'TV Empresas', 1, 219.9);
+  for (let j = 0; j < 5; j++) add(j, 5, 'Microsoft 365 (TI Recorrente)', 1, 349.9);
+  for (let j = 0; j < 4; j++) add(j, 4, 'Locação de Equipamentos', 1, 450);
+  const EL = ['Aparelho Smartphone Galaxy A55', 'Aparelho Smartphone Galaxy S24', 'Aparelho iPhone 15', 'Revenda de Equipamento - Notebook', 'Revenda de Equipamento - Switch', 'Aparelho Smartphone Motorola Edge'], EV = [2899, 3499, 9998, 6499, 5299, 7999], EQ = [1, 1, 2, 1, 1, 1];
+  for (let k = 0; k < 54; k++) add(k, 54, EL[k % 6], EQ[k % 6], EV[k % 6]);
+  add(10, 26, 'Energia - Mercado Livre', 1, 1500);
+  linhas.sort((a, b) => lerData(a['Data da Ativação']) - lerData(b['Data da Ativação']));
+  return { cabecalhos: Object.keys(linhas[0]), linhas };
+}
+</script>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const hoje = () => { const t = new Date(); return diaDe(t.getFullYear(), t.getMonth() + 1, t.getDate()); };
+const lerIso = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? diaDe(+m[1], +m[2], +m[3]) : null; };
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+// ===== Ícones =====
+const ICON = {
+  home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+  chart: 'M5 20v-9M11 20V5M17 20v-7M3 20h18',
+  calc: 'M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01',
+  upload: 'M12 15V4M7.5 8.5 12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3',
+  clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  bell: 'M6 16v-5a6 6 0 1 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0',
+  gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1',
+  search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',
+  calendar: 'M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM4 10h16M8 3v4M16 3v4',
+  chevdown: 'M6 9l6 6 6-6',
+  chev: 'M9 6l6 6-6 6',
+  trophy: 'M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9.5 17h5v4h-5z',
+  crown: 'M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z',
+  target: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
+  users: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 7M22 21v-1a6 6 0 0 0-4-5.6',
+  cart: 'M3 4h2l2.4 11h10.8L21 7H6.2M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
+  wifi: 'M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01',
+  receipt: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3',
+  shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
+  house: 'M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5',
+  phone: 'M8 2h8a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM11 18h2',
+  sparkle: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 3v4M17 5h4',
+  check: 'M5 12l5 5L20 7',
+  alert: 'M12 3 2 20h20zM12 10v4M12 17h.01',
+  alertc: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 8v5M12 16h.01',
+  info: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v5M12 7.5h.01',
+  star: 'M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z',
+  refresh: 'M20 11a8 8 0 0 0-14.9-4M4 3v4h4M4 13a8 8 0 0 0 14.9 4M20 21v-4h-4',
+  bulb: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z',
+  file: 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5',
+  trend: 'M3 17l6-6 4 4 8-8M15 7h6v6',
+  list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
+  pie: 'M12 3v9h9M21 12a9 9 0 1 1-9-9',
+  copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
+  bolt: 'M13 2 4 14h7l-1 8 9-12h-7z',
+  arrow: 'M4 12h16M14 6l6 6-6 6',
+};
+const ic = (n, s = 18) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICON[n]}"/></svg>`;
+function trocarIcones(raiz = document) { raiz.querySelectorAll('i[data-ic]').forEach(el => { el.outerHTML = ic(el.dataset.ic, +el.dataset.s || 18); }); }
+
+// ===== Gráficos =====
+function passoBom(x) { const p = Math.pow(10, Math.floor(Math.log10(x || 1))), n = x / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; }
+function dica(el) { let t = el.querySelector('.tip'); if (!t) { t = document.createElement('div'); t.className = 'tip'; el.appendChild(t); } return t; }
+// Linha de uma série com referência tracejada e, opcional, um ponto de cenário
+function grafLinha(el, serie, o = {}) {
+  const W = el.clientWidth; if (!W) return;
+  const H = o.h || 220, m = { t: 26, r: 18, b: 28, l: 42 };
+  const pts = serie.concat(o.sim ? [o.sim] : []);
+  const ys = pts.map(p => p.y).concat(o.ref ? [o.ref.y] : []);
+  const passo = passoBom((Math.max(...ys) - Math.min(...ys)) / 4 || 50);
+  const lo = Math.max(0, Math.floor((Math.min(...ys) - passo * 0.5) / passo) * passo), hi = Math.ceil((Math.max(...ys) + passo * 0.3) / passo) * passo;
+  const X = k => m.l + (pts.length < 2 ? 0 : k * (W - m.l - m.r) / (pts.length - 1)), Y = v => m.t + (hi - v) / (hi - lo) * (H - m.t - m.b);
+  let g = '';
+  for (let v = lo; v <= hi + EPS; v += passo) g += `<line class="gl" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end">${nf(v)}</text>`;
+  pts.forEach((p, k) => { g += `<text class="ax" x="${X(k)}" y="${H - 8}" text-anchor="middle">${esc(p.x)}</text>`; });
+  if (o.ref) g += `<line class="ref" x1="${m.l}" x2="${W - m.r}" y1="${Y(o.ref.y)}" y2="${Y(o.ref.y)}"/><text class="reft" x="${W - m.r}" y="${Y(o.ref.y) - 6}" text-anchor="end">${esc(o.ref.rot)}</text>`;
+  const real = serie.map((p, k) => `${X(k)},${Y(p.y)}`).join(' ');
+  g += `<polygon class="area" points="${X(0)},${Y(lo)} ${real} ${X(serie.length - 1)},${Y(lo)}"/>`;
+  g += `<polyline class="ln" points="${real}"/>`;
+  if (o.sim) g += `<line class="ln sim" x1="${X(serie.length - 1)}" y1="${Y(serie[serie.length - 1].y)}" x2="${X(pts.length - 1)}" y2="${Y(o.sim.y)}"/>`;
+  pts.forEach((p, k) => { g += `<circle class="pt${o.sim && k === pts.length - 1 ? ' sim' : ''}" cx="${X(k)}" cy="${Y(p.y)}" r="4.5"/>`; });
+  const u = pts.length - 1;
+  g += `<text class="vl" x="${X(u)}" y="${Y(pts[u].y) - 11}" text-anchor="end">${nf(pts[u].y)}</text>`;
+  el.innerHTML = `<svg width="${W}" height="${H}" role="img" aria-label="${esc(o.titulo || 'Evolução da nota')}">${g}</svg>`;
+  const tip = dica(el), svg = el.querySelector('svg');
+  svg.addEventListener('mousemove', ev => {
+    const r = svg.getBoundingClientRect(), k = clamp(Math.round((ev.clientX - r.left - m.l) / ((W - m.l - m.r) / Math.max(1, u))), 0, u);
+    tip.textContent = `${pts[k].x}: ${nf(pts[k].y)} pts${pts[k].nota ? ' · ' + pts[k].nota : ''}`;
+    tip.style.left = X(k) + 'px'; tip.style.top = Y(pts[k].y) + 'px'; tip.classList.add('on');
+  });
+  svg.addEventListener('mouseleave', () => tip.classList.remove('on'));
+}
+// Rosca: pontos por indicador + parte não conquistada
+function grafRosca(el, partes, centro, sub) {
+  const r = 66, C = 2 * Math.PI * r, tot = soma(partes.map(p => p.v)) || 1;
+  let acc = 0, seg = '';
+  partes.forEach((p, k) => {
+    const len = p.v / tot * C;
+    if (len > 0.5) seg += `<circle data-k="${k}" r="${r}" cx="85" cy="85" stroke="${p.cor}" stroke-width="24" stroke-dasharray="${Math.max(0.1, len - 2)} ${C}" stroke-dashoffset="${-acc}" transform="rotate(-90 85 85)"/>`;
+    acc += len;
+  });
+  el.innerHTML = `<div class="donut-w"><div class="chart"><svg width="150" height="150" viewBox="0 0 170 170" role="img" aria-label="Contribuição de cada indicador para a nota">${seg}<text class="dc-v" x="85" y="88" text-anchor="middle">${centro}</text><text class="dc-s" x="85" y="108" text-anchor="middle">${sub}</text></svg></div>
+    <ul class="leg">${partes.map(p => `<li><i style="background:${p.cor}"></i><span>${p.nome}</span><span><b>${p.pct}</b><em>(${nf(p.v)})</em></span></li>`).join('')}</ul></div>`;
+  const box = el.querySelector('.chart'), tip = dica(box);
+  box.querySelectorAll('circle[data-k]').forEach(c => {
+    c.addEventListener('mousemove', ev => { const p = partes[+c.dataset.k], b = box.getBoundingClientRect(); tip.textContent = `${p.nome}: ${nf(p.v)} pts`; tip.style.left = (ev.clientX - b.left) + 'px'; tip.style.top = (ev.clientY - b.top) + 'px'; tip.classList.add('on'); });
+    c.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  });
+}
+function partesContrib(base, R) {
+  const cores = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)'];
+  const t = base.total || 1;
+  const p = INDICADORES.map((i, k) => ({ nome: i.nome, v: base.por[i.id].pts, cor: cores[k % cores.length], pct: nf(base.por[i.id].pts / t * 100, 0) + '%' }));
+  p.push({ nome: 'Não conquistado', v: Math.max(0, R.escala - base.total), cor: 'var(--s-off)', pct: '—' });
+  return p;
+}
+// Barras agrupadas: % da meta, atual x simulado
+function grafBarras(el, grupos) {
+  const W = el.clientWidth; if (!W) return;
+  const H = 250, m = { t: 14, r: 8, b: 30, l: 40 };
+  const mx = Math.max(120, ...grupos.map(g => Math.max(g.a || 0, g.b || 0) * 100));
+  const hi = Math.ceil(mx / 20) * 20, Y = v => m.t + (hi - v) / hi * (H - m.t - m.b), gw = (W - m.l - m.r) / grupos.length;
+  const bw = clamp(gw * 0.28, 6, 22);
+  let g = '';
+  for (let v = 0; v <= hi; v += 20) g += `<line class="gl" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${v}%</text>`;
+  g += `<line class="ref" x1="${m.l}" x2="${W - m.r}" y1="${Y(100)}" y2="${Y(100)}"/>`;
+  const barra = (x, v, cls, k, s) => { const h = Math.max(0, Y(0) - Y(v)), r = Math.min(4, h / 2, bw / 2), y0 = Y(0); return `<path class="${cls}" data-k="${k}" data-s="${s}" d="M${x},${y0}V${y0 - h + r}Q${x},${y0 - h} ${x + r},${y0 - h}H${x + bw - r}Q${x + bw},${y0 - h} ${x + bw},${y0 - h + r}V${y0}Z"/>`; };
+  grupos.forEach((gr, k) => {
+    const cx = m.l + gw * k + gw / 2;
+    g += barra(cx - bw - 1, (gr.a || 0) * 100, 'b-a', k, 'a') + barra(cx + 1, (gr.b || 0) * 100, 'b-b', k, 'b');
+    g += `<text class="ax" x="${cx}" y="${H - 10}" text-anchor="middle">${esc(gr.rot)}</text>`;
+  });
+  el.innerHTML = `<svg width="${W}" height="${H}" role="img" aria-label="Percentual da meta antes e depois da simulação">${g}</svg>`;
+  const tip = dica(el);
+  el.querySelectorAll('path[data-k]').forEach(p => {
+    p.addEventListener('mousemove', ev => { const gr = grupos[+p.dataset.k], b = el.getBoundingClientRect(); tip.textContent = `${gr.rot} · ${p.dataset.s === 'a' ? 'Atual' : 'Simulado'}: ${nf(((p.dataset.s === 'a' ? gr.a : gr.b) || 0) * 100, 0)}% da meta`; tip.style.left = (ev.clientX - b.left) + 'px'; tip.style.top = (ev.clientY - b.top) + 'px'; tip.classList.add('on'); });
+    p.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  });
+}
+function spark(vals) {
+  if (!vals || vals.length < 2) return '<span class="muted">—</span>';
+  const w = 80, h = 26, lo = Math.min(...vals), hi = Math.max(...vals), sp = hi - lo || 1;
+  const pts = vals.map((v, k) => [k / (vals.length - 1) * w, h - 2 - (v - lo) / sp * (h - 4)]);
+  return `<svg class="spark" width="${w}" height="${h}" aria-hidden="true"><path d="M${pts.map(p => p.join(',')).join('L')}"/><circle cx="${pts[pts.length - 1][0]}" cy="${pts[pts.length - 1][1]}" r="2.5"/></svg>`;
+}
+
+</script>
+<script>
+"use strict";
+Object.assign(ICON, {
+  gem: 'M6 3h12l4 6-10 12L2 9zM2 9h20M9.5 3 8 9l4 12 4-12-1.5-6',
+  layers: 'M12 3 2 8l10 5 10-5zM2 13l10 5 10-5M2 17.5 12 22l10-4.5',
+});
+const fBRLk = x => (Math.abs(x) >= 1e6 ? `R$ ${nf(x / 1e6, 1)} mi` : Math.abs(x) >= 1000 ? `R$ ${nf(x / 1000, x % 1000 ? 1 : 0)} mil` : `R$ ${nf(x)}`);
+const tipoDe = id => IND[id].tipo;
+const fmtI = (id, v) => (v == null ? '—' : tipoDe(id) === 'brl' ? fBRLc(v) : tipoDe(id) === 'qtd' ? nf(v, Number.isInteger(v) ? 0 : 2) : nf(v));
+const fmtF = (id, t) => (tipoDe(id) === 'brl' ? fBRLk(t) : nf(t));
+const fx = L => `<span class="fx fx${L}">${L ? 'F' + L : '—'}</span>`;
+const nomeMes = k => MESES_C[+k.split('-')[1] - 1];
+const UNID = { telecom: '/mês', eletronicos: '/mês', novos: '/mês', ftth: ' físicos/mês', fdv: ' por FDV/mês', qscCarteira: ' de nota/mês', qscMovel: ' de nota/mês', qscFixa: ' de nota/mês' };
+const fmtNec = (id, v) => (tipoDe(id) === 'brl' ? fBRLc(v) : nf(v)) + UNID[id];
+function rotRest() { const { ci, vm } = S.calc, f = ci.meses.filter(k => vm[k].futuro); return !f.length ? '' : f.length === 1 ? nomeMes(f[0]) : `${nomeMes(f[0])}–${nomeMes(f[f.length - 1])}`; }
+const passaBusca = i => !S.busca || semAcento(i.nome + ' ' + i.curto).includes(semAcento(S.busca));
+const PRI = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
+function kpi(icone, tom, titulo, valor, unidade, sub, ajuda, extra = '') {
+  return `<div class="card kpi"><span class="tile ${tom}">${ic(icone, 24)}</span><div class="kpi-b">
+    <p class="kpi-l">${titulo}${ajuda ? `<span class="help" title="${esc(ajuda)}">${ic('info', 14)}</span>` : ''}</p>
+    <div class="kpi-v"><strong>${valor}</strong>${unidade ? `<span>${unidade}</span>` : ''}</div>${sub ? `<p class="kpi-s">${sub}</p>` : ''}</div>${extra}</div>`;
+}
+const variacao = (d, txt) => (Math.abs(d) < 0.5 ? `Sem variação ${txt}` : `<span class="${d > 0 ? 'up' : 'down'}">${d > 0 ? '▲ +' : '▼ −'}${nf(Math.abs(d))} pts</span> ${txt}`);
+
+// ===== Estado =====
+const EXEMPLO_ALTAS = gerarAltasExemplo();
+const S = {
+  R: clone(REGRAS_EXEMPLO), rep: null, corteManual: null, modo: 'realizado',
+  meses: clone(MESES_EXEMPLO), mesesExemplo: true, qsc: clone(QSC_EXEMPLO), qscFonte: 'exemplo', qscQuando: new Date(),
+  oficial: { data: diaDe(2026, 10, 19), pontos: 10800, exemplo: true },
+  pagina: 'dashboard', busca: '', filtro: { bloco: '', sit: '' }, fut: null, cenario: 'provavel', log: [], abaImp: 'arquivos', calc: null,
+};
+function usarExemploAltas() {
+  const e = EXEMPLO_ALTAS;
+  S.rep = { origem: 'exemplo', arquivo: null, aba: null, quando: new Date(), cabecalhos: e.cabecalhos, linhas: e.linhas, mapa: autoMapear(e.cabecalhos, DEF.altas.campos) };
+}
+usarExemploAltas();
+S.log.push({ quando: new Date(), txt: 'Dados de exemplo: altas de outubro, meses fechados e QSC do print 202610', st: 'ex' });
+function corteAuto() {
+  const r = S.rep;
+  if (!pronto('altas', r)) return null;
+  let mx = null;
+  for (const row of r.linhas) { const d = lerData(row[r.mapa.data]); if (d != null && (mx == null || d > mx)) mx = d; }
+  return mx;
+}
+const corteAtual = () => S.corteManual ?? corteAuto() ?? hoje();
+
+function calcular() {
+  const R = S.R, corte = corteAtual(), ci = cicloDe(corte), ini = inicioMes(corte);
+  const A = extrairAltas(S.rep, R, corte), dias = corte - ini + 1, tot = fimMes(corte) - ini + 1;
+  const kp = S.modo === 'projetado' && dias < tot ? tot / dias : 1;
+  const qn = Object.fromEntries(QSCS.map(id => [id, notaQsc(id, S.qsc[id], R)]));
+  const pos = ci.meses.indexOf(ci.atual), atual = {};
+  if (A.ok) for (const c of ALTAS) atual[c] = c === 'ftth' ? Math.round(A[c] * kp) : Math.round(A[c] * kp * 100) / 100;
+  atual.fdvQtd = pos > 0 ? (S.meses[ci.meses[pos - 1]] || {}).fdvQtd ?? null : null;
+  for (const id of QSCS) atual[id] = qn[id].nota;
+  const vm = valoresCiclo(ci, S.meses, atual, R), res = apurar(ci, vm, R, ci.atual);
+  const evol = ci.meses.filter(k => k <= ci.atual).map(k => ({ x: rotChave(k), y: apurar(ci, vm, R, k).total }));
+  S.calc = { R, corte, ci, A, kp, qn, atual, vm, res, evol, reqs: requisitos(res, R) };
+}
+
+// ===== Análises =====
+function opcoesGanho() { // próxima faixa de cada indicador e o valor mensal necessário
+  const { res, R, ci, vm } = S.calc, out = [];
+  for (const i of INDICADORES) {
+    const q = res.por[i.id];
+    if (q.L >= 5 || !q.n) continue;
+    const L = q.L + 1, alvo = R.ind[i.id].faixas[L - 1], n = precisaPorMes(i.id, alvo, ci, vm);
+    if (!n.rest || n.valor == null) continue;
+    if (i.tipo === 'nota' && n.valor > maxNota(i.id, R)) continue;
+    const base = soma(q.vals) / q.vals.length;
+    out.push({ id: i.id, L, alvo, valor: n.valor, garantido: n.garantido, ganho: R.ind[i.id].pontos[L - 1] - q.pts, base, esforco: base > 0 ? n.valor / base - 1 : 9 });
+  }
+  return out.sort((a, b) => a.esforco - b.esforco);
+}
+function riscos() { // indicadores que podem cair de faixa no fechamento do ciclo
+  const { res, R, ci, vm } = S.calc, out = [];
+  for (const i of INDICADORES) {
+    const q = res.por[i.id];
+    if (!q.L || !q.n) continue;
+    const n = precisaPorMes(i.id, R.ind[i.id].faixas[q.L - 1], ci, vm), base = soma(q.vals) / q.vals.length;
+    if (n.rest && !n.garantido && base > 0 && n.valor >= base * 0.9) out.push({ id: i.id, L: q.L, valor: n.valor, base, folga: (base - n.valor) / base });
+  }
+  return out.sort((a, b) => a.folga - b.folga);
+}
+function ganhosQsc() {
+  const out = [];
+  for (const id of QSCS) S.calc.qn[id].comps.forEach(x => {
+    if (x.tier == null || x.tier === 0) return;
+    const c = x.c, [k1, k2] = S.qsc[id][c.id], alvo = c.lims[x.tier - 1];
+    const novo = c.dir === 'maior' ? Math.ceil(alvo / 100 * k2 - 1e-9) : Math.ceil(alvo / 100 * k2 - 1e-9) - 1;
+    out.push({ id, c, ganho: c.pts[x.tier - 1] - x.nota, alvo, k1, k2, novo, delta: novo - k1, pct: x.pct });
+  });
+  return out.sort((a, b) => b.ganho - a.ganho || Math.abs(a.delta) / a.k2 - Math.abs(b.delta) / b.k2);
+}
+function reqTxt(r) {
+  const R = S.R;
+  if (r.tipo === 'pontos') return `+${nf(r.falta)} pontos`;
+  if (r.tipo === 'receita') return `Receita Telecom média ≥ ${fBRLk(r.alvo)}`;
+  return `${IND[r.id].nome} ≥ ${R.qscMin}`;
+}
+function planoProxima() { // o que falta para a próxima pedra, em valores mensais nos meses restantes
+  const { res, R, ci, vm, reqs } = S.calc, itens = [];
+  if (!res.prox || !ci.meses.some(k => vm[k].futuro)) return itens;
+  for (const r of reqs) {
+    if (r.tipo === 'receita') { const n = precisaPorMes('telecom', r.alvo, ci, vm); itens.push({ id: 'telecom', valor: n.valor, txt: `Receita Telecom: ${fBRLc(n.valor)}/mês`, sub: `para a média do ciclo chegar a ${fBRLk(r.alvo)}` }); }
+    if (r.tipo === 'qsc') { const n = precisaPorMes(r.id, R.qscMin, ci, vm); itens.push({ id: r.id, valor: n.valor, txt: `${IND[r.id].nome}: nota ${nf(n.valor)}/mês`, sub: `para a média chegar a ${R.qscMin}` }); }
+    if (r.tipo === 'pontos') {
+      let falta = r.falta;
+      for (const g of opcoesGanho().filter(g => !itens.some(x => x.id === g.id)).sort((a, b) => a.esforco / a.ganho - b.esforco / b.ganho)) {
+        if (falta <= 0) break;
+        itens.push({ id: g.id, valor: g.valor, txt: `${IND[g.id].curto}: ${fmtNec(g.id, g.valor)}`, sub: `leva à Faixa ${g.L} (+${nf(g.ganho)} pts)` });
+        falta -= g.ganho;
+      }
+    }
+  }
+  return itens;
+}
+
+// ===== Moldura =====
+const PAGINAS = [['dashboard', 'home', 'Dashboard'], ['indicadores', 'chart', 'Indicadores'], ['qualidade', 'shield', 'Qualidade (QSC)'], ['simulador', 'calc', 'Simulador'], ['apuracao', 'calendar', 'Apuração do Ciclo'], ['importacoes', 'upload', 'Importações'], ['alertas', 'bell', 'Alertas'], ['regras', 'gear', 'Regras']];
+function renderMoldura() {
+  const { corte, ci } = S.calc, al = alertas().filter(a => a.pri !== 'baixa').length;
+  $('#nav').innerHTML = PAGINAS.map(([id, icone, nome]) => `<button type="button" data-ir="${id}"${S.pagina === id ? ' aria-current="page"' : ''}>${ic(icone, 19)}<span>${nome}</span>${id === 'alertas' && al ? `<span class="count">${al}</span>` : ''}</button>`).join('');
+  $('#periodo').textContent = `${ci.nome} · até ${fDiaMes(corte)}`;
+  $('#bell-dot').hidden = !al;
+  document.querySelectorAll('[data-modo]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.modo === S.modo)));
+  const partesEx = [];
+  if (S.rep.origem === 'exemplo') partesEx.push('as altas de outubro');
+  if (S.mesesExemplo) partesEx.push('os meses de julho a setembro');
+  if (S.qscFonte === 'exemplo') partesEx.push('os KPIs do QSC (copiados do print do relatório 202610)');
+  let html = partesEx.length ? `<strong>Dados de exemplo:</strong> ${partesEx.join(', ').replace(/, ([^,]*)$/, ' e $1')}. As regras seguem o Guia Rápido de Certificação. Carregue seus arquivos em <button type="button" class="link" data-ir="importacoes">Importações</button> e complete os meses em <button type="button" class="link" data-ir="apuracao">Apuração do Ciclo</button>.` : '';
+  if (!pronto('altas', S.rep)) html += ' <strong>Falta escolher colunas no relatório de altas.</strong>';
+  $('#aviso').hidden = !html;
+  $('#aviso').innerHTML = html ? `${ic('info', 16)}<p>${html}</p>` : '';
+}
+
+// ===== Dashboard =====
+function barraPos(pct, rot, ticks) {
+  return `<span class="plab" style="left:${clamp(pct, 5, 95)}%">${rot}</span><div class="pbar"><i style="width:${pct}%"></i></div>${ticks.map(t => `<span class="ptick${t.alvo ? ' alvo' : ''}" style="left:${t.x}%"></span><span class="pname${t.alvo ? ' alvo' : ''}" style="left:${t.x}%">${t.t}<br>${t.v}</span>`).join('')}`;
+}
+function partesContrib(res) {
+  const cores = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)', 'var(--s8)'], t = res.total || 1;
+  const p = INDICADORES.map((i, k) => ({ nome: i.curto, v: res.por[i.id].pts, cor: cores[k], pct: nf(res.por[i.id].pts / t * 100, 0) + '%' }));
+  p.push({ nome: 'Não conquistado', v: Math.max(0, maxPontos(S.R) - res.total), cor: 'var(--s-off)', pct: '—' });
+  return p;
+}
+function renderDashboard() {
+  const { res, R, ci, vm, reqs, evol, corte } = S.calc, C = R.classes, cl = res.classe, p = res.prox, of = S.oficial, rr = rotRest();
+  const limite = res.k < res.kPts ? (res.k === res.kRec ? 'pela Receita Telecom' : `pelo QSC abaixo de ${R.qscMin}`) : '';
+  const reqRec = reqs.find(r => r.tipo === 'receita'), reqPts = reqs.find(r => r.tipo === 'pontos'), ant = evol.length > 1 ? evol[evol.length - 2] : null;
+  $('#d-kpis').innerHTML =
+    kpi('gem', 'gold', 'Classificação', cl.nome, `bônus de ${nf(cl.bonus, 1)}%`, limite ? `Pelos pontos seria <b>${C[res.kPts].nome}</b>; limitada ${limite}` : 'Média do ciclo até agora', 'Pedra calculada com a média do ciclo até a data de apuração')
+    + kpi('chart', '', 'Pontuação', nf(res.total), `de ${nf(maxPontos(R))} pontos`, (ant ? variacao(res.total - ant.y, `desde ${ant.x}`) : '') + (of.pontos != null && of.data != null ? `<br>Base oficial de ${fDiaMes(of.data)}: <b>${nf(of.pontos)}</b>` : ''), 'Soma dos pontos das faixas atingidas pela média de cada indicador')
+    + kpi('trophy', 'gold', 'Próxima Classificação', p ? p.nome : '—', p ? `bônus de ${nf(p.bonus, 1)}%` : '', p ? reqs.map(reqTxt).join('<br>') + (reqRec ? `<br><b>Faltam ${fBRLk(reqRec.falta)} na média</b>` : reqPts ? `<br><b>Faltam ${nf(reqPts.falta)} pontos</b>` : '') : 'Classificação máxima')
+    + kpi('receipt', '', 'Receita Telecom', fBRLc(res.rec), 'média mensal', `Mínimo para ${cl.nome}: ${cl.receita ? fBRLk(cl.receita) : 'sem mínimo'}${p && p.receita ? `<br>Para ${p.nome}: ${fBRLk(p.receita)}` : ''}`);
+  const mp = maxPontos(R), Xp = v => clamp(v / mp * 100, 0, 100), rm = Math.max(220000, res.rec * 1.1), Xr = v => clamp(v / rm * 100, 0, 100);
+  $('#d-pos').innerHTML = `<div class="pos"><div class="pos-h"><h3>Sua posição no ${ci.nome}</h3><span class="chip info">${ci.rot}</span><span class="chip ${S.modo === 'projetado' ? 'media' : 'ex'}">Mês atual ${S.modo === 'projetado' ? 'projetado' : 'realizado até ' + fDiaMes(corte)}</span></div>
+    <div class="pos-row"><span class="pos-l">Pontuação</span><div class="pbar-w" aria-hidden="true">${barraPos(Xp(res.total), nf(res.total) + ' pts', C.slice(1).map(c => ({ x: Xp(c.min), t: c.nome, v: nf(c.min), alvo: p && c.nome === p.nome })))}</div></div>
+    <div class="pos-row"><span class="pos-l">Receita Telecom<br><small>média mensal</small></span><div class="pbar-w" aria-hidden="true">${barraPos(Xr(res.rec), fBRLk(res.rec), C.filter(c => c.receita).map(c => ({ x: Xr(c.receita), t: c.nome, v: fBRLk(c.receita), alvo: p && c.nome === p.nome })))}</div></div>
+    <div class="pos-qsc"><span class="pos-l">QSC ≥ ${R.qscMin}<br><small>Diamante, Platinum e V</small></span>${QSCS.map(id => { const m = res.por[id].media; return `<span class="chip ${m == null ? 'sem' : m >= R.qscMin ? 'ok' : 'erro'}">${m != null && m >= R.qscMin ? ic('check', 13) : ic('alertc', 13)}${IND[id].curto} ${m == null ? '—' : nf(m)}</span>`; }).join('')}</div></div>`;
+  $('#d-tab-sub').textContent = `Média do ciclo até ${fData(corte)}${rr ? ` · valor por mês necessário em ${rr}` : ''}`;
+  $('#d-tab').innerHTML = `<table class="t compact"><thead><tr><th>Indicador</th><th class="n">Média do ciclo</th><th>Faixa</th><th class="n">Pontos</th><th class="n">Próxima faixa</th><th class="n">Precisa/mês</th><th>Mês a mês</th></tr></thead><tbody>${INDICADORES.filter(passaBusca).map(i => {
+    const q = res.por[i.id], f = R.ind[i.id], alvo = q.L < 5 ? f.faixas[q.L] : null, n = alvo != null ? precisaPorMes(i.id, alvo, ci, vm) : null;
+    const nec = !n ? '—' : !n.rest ? 'Ciclo fechado' : n.garantido ? '<span class="okc">Garantida</span>' : `<b>${tipoDe(i.id) === 'brl' ? fBRLc(n.valor) : nf(n.valor)}</b>`;
+    const serie = ci.meses.filter(k => !vm[k].futuro).map(k => campoEf(i.id, vm[k])).filter(x => x != null);
+    return `<tr><td><span class="iname">${ic(i.icone)}${i.curto}</span></td><td class="n"><b>${fmtI(i.id, q.media)}</b></td><td>${fx(q.L)}</td><td class="n"><b>${nf(q.pts)}</b> <span class="muted">/ ${nf(q.max)}</span></td><td class="n">${alvo != null ? fmtF(i.id, alvo) : '<span class="okc">Máxima</span>'}</td><td class="n">${nec}</td><td>${spark(serie)}</td></tr>`;
+  }).join('') || '<tr><td colspan="7" class="muted">Nenhum indicador encontrado na busca.</td></tr>'}</tbody></table>`;
+  S.recs = recomendacoes();
+  $('#d-recs').innerHTML = S.recs.map((r, k) => `<button type="button" class="rec${k ? '' : ' first'}" data-rec="${k}"><span class="tile">${ic(r.icone, 20)}</span><span><h3>${r.titulo}</h3><p>${r.texto}</p></span>${ic('chev', 18).replace('class="ic"', 'class="ic chev"')}</button>`).join('') || `<p class="muted">${INDICADORES.some(i => S.calc.res.por[i.id].n) ? 'Nada a recomendar: todos os indicadores estão na faixa máxima.' : 'Ainda não há dados no ciclo. Carregue o relatório de altas e complete a Apuração do Ciclo.'}</p>`;
+  grafLinha($('#d-evol'), evol, { h: 210, ref: p ? { y: p.min, rot: `${p.nome} · ${nf(p.min)} pts` } : null, titulo: 'Evolução da pontuação no ciclo' });
+  grafRosca($('#d-contrib'), partesContrib(res), nf(res.total), 'pontos');
+  $('#d-acoes').innerHTML = `<ol class="acts">${acoesPrioritarias().slice(0, 5).map((a, k) => `<li class="act"><span class="num">${k + 1}</span><p>${a.txt}</p><span class="chip ${a.pri}">${PRI[a.pri]}</span></li>`).join('') || '<li class="act"><p class="muted">Sem ações pendentes.</p></li>'}</ol>`;
+}
+function recomendacoes() {
+  const { res, R, reqs } = S.calc, p = res.prox, rr = rotRest(), out = [];
+  if (!rr) return out;
+  const rec = reqs.find(r => r.tipo === 'receita');
+  if (rec) {
+    const it = planoProxima().find(x => x.id === 'telecom');
+    out.push({ icone: 'receipt', titulo: `Receita Telecom define a ${p.nome}`, plano: { telecom: it.valor },
+      texto: `${res.k < res.kPts ? `Os pontos já dão ${R.classes[res.kPts].nome}, mas a` : 'A'} média de ${fBRLc(res.rec)} só permite ${res.classe.nome}. Para ${p.nome}, a Receita Telecom precisa de ${fBRLc(it.valor)}/mês em ${rr}.` });
+  }
+  reqs.filter(r => r.tipo === 'qsc').forEach(r => { const n = precisaPorMes(r.id, R.qscMin, S.calc.ci, S.calc.vm); out.push({ icone: 'shield', titulo: `${IND[r.id].nome} abaixo de ${R.qscMin}`, plano: { [r.id]: n.valor }, texto: `Média de ${nf(res.por[r.id].media)}. Sem nota ${R.qscMin} em todos os QSC, a classificação fica em Ouro. Precisa de nota ${nf(n.valor)}/mês em ${rr}.` }); });
+  const rk = riscos()[0];
+  if (rk) out.push({ icone: 'alert', titulo: `${IND[rk.id].curto} perto do limite da Faixa ${rk.L}`, plano: { [rk.id]: rk.valor }, texto: `Para manter a Faixa ${rk.L}, o mínimo é ${fmtNec(rk.id, rk.valor)} em ${rr}; a média atual é ${fmtI(rk.id, rk.base)}.` });
+  const g = opcoesGanho().sort((a, b) => a.esforco / a.ganho - b.esforco / b.ganho)[0];
+  if (g) out.push({ icone: IND[g.id].icone, titulo: `+${nf(g.ganho)} pts em ${IND[g.id].curto}`, plano: { [g.id]: g.valor }, texto: `${fmtNec(g.id, g.valor)} em ${rr} levam a média à Faixa ${g.L} (${fmtF(g.id, g.alvo)}).` });
+  return out.slice(0, 3);
+}
+function acoesPrioritarias() {
+  const { res } = S.calc, rr = rotRest(), out = [];
+  if (!rr) return out;
+  planoProxima().forEach(it => out.push({ pri: 'alta', txt: `${it.txt} em ${rr} (${it.sub})` }));
+  riscos().forEach(r => out.push({ pri: 'media', txt: `Manter ${IND[r.id].curto} em pelo menos ${fmtNec(r.id, r.valor)} (Faixa ${r.L})` }));
+  const gq = ganhosQsc()[0];
+  if (gq) out.push({ pri: 'media', txt: `${gq.c.nome} (${IND[gq.id].curto}): KPI 1 em ${nf(gq.novo)} soma +${nf(gq.ganho)} na nota do mês` });
+  opcoesGanho().filter(g => !out.some(o => o.txt.startsWith(IND[g.id].curto))).slice(0, 2).forEach(g => out.push({ pri: 'baixa', txt: `${IND[g.id].curto}: ${fmtNec(g.id, g.valor)} para a Faixa ${g.L} (+${nf(g.ganho)} pts)` }));
+  return out;
+}
+// ===== Indicadores =====
+function linhasIndicadores() {
+  const { res } = S.calc, rk = riscos().map(r => r.id), f = S.filtro;
+  return INDICADORES.filter(i => passaBusca(i) && (!f.bloco || i.bloco === f.bloco)
+    && (!f.sit || (f.sit === 'max' ? res.por[i.id].L === 5 : f.sit === 'sobe' ? res.por[i.id].L < 5 : rk.includes(i.id))));
+}
+function renderIndicadores() {
+  const { res, R, ci, vm } = S.calc, rk = riscos(), rr = rotRest(), mp = maxPontos(R);
+  $('#f-ciclo').innerHTML = `<option>${ci.nome} · ${ci.rot}</option>`;
+  $('#f-bloco').value = S.filtro.bloco;
+  $('#f-sit').value = S.filtro.sit;
+  $('#i-kpis').innerHTML =
+    kpi('trophy', 'good', 'Na faixa máxima', INDICADORES.filter(i => res.por[i.id].L === 5).length, `de ${INDICADORES.length} indicadores`, 'Média do ciclo na Faixa 5')
+    + kpi('chart', '', 'Pontos conquistados', nf(res.total), `de ${nf(mp)}`, `Classificação: <b>${res.classe.nome}</b>`)
+    + kpi('star', 'gold', 'Potencial de ganho', '+' + nf(mp - res.total), 'pontos', 'Se todos os indicadores chegarem à Faixa 5')
+    + kpi('alert', rk.length ? 'warn' : 'good', 'Em risco de cair', rk.length, rk.length === 1 ? 'indicador' : 'indicadores', rr ? `Média perto do mínimo da faixa; veja em ${rr}` : 'Ciclo sem meses restantes');
+  $('#i-tab').innerHTML = `<table class="t"><thead><tr><th>Indicador</th><th>Bloco</th><th class="n">Média do ciclo</th>${[1, 2, 3, 4, 5].map(n => `<th class="fxc">Faixa ${n}</th>`).join('')}<th class="n">Pontos</th></tr></thead><tbody>${linhasIndicadores().map(i => {
+    const q = res.por[i.id], f = R.ind[i.id];
+    return `<tr><td><span class="iname" title="${esc(i.desc)}">${ic(i.icone)}${i.curto}</span></td><td>${i.bloco === 'altas' ? 'Altas' : 'Qualidade'}</td><td class="n"><b>${fmtI(i.id, q.media)}</b></td>
+      ${f.faixas.map((t, j) => `<td class="fxc${j < q.L ? ' ok' : ''}${j === q.L - 1 ? ' cur' : ''}${j === q.L ? ' next' : ''}"><b>${fmtF(i.id, t)}</b><small>${nf(f.pontos[j])} pts</small></td>`).join('')}
+      <td class="n"><b>${nf(q.pts)}</b> <span class="muted">/ ${nf(q.max)}</span></td></tr>`;
+  }).join('') || '<tr><td colspan="9" class="muted">Nenhum indicador com esses filtros.</td></tr>'}</tbody></table>`;
+  $('#i-gaps-sub').textContent = rr ? `Valor necessário por mês em ${rr}, comparado com a média mensal atual` : 'Ciclo sem meses restantes';
+  const ops = opcoesGanho();
+  $('#i-gaps').innerHTML = ops.length || rk.length ? `<ol class="gaps">${ops.map((g, k) => `<li class="gap"><span class="num">${k + 1}</span>${ic(IND[g.id].icone)}<strong>${IND[g.id].curto} <small class="muted">→ F${g.L}</small></strong><span class="gv" style="color:var(--ink)">${tipoDe(g.id) === 'brl' ? fBRLk(g.valor) : nf(g.valor)}<small>+${nf(g.ganho)} pts</small></span>${meter(Math.min(9.99, g.base / Math.max(1, g.valor)), g.garantido || g.base >= g.valor ? 'alvo' : g.base >= g.valor * 0.8 ? 'atencao' : 'critico')}</li>`).join('')}
+    ${rk.map(r => `<li class="gap"><span class="num">!</span>${ic(IND[r.id].icone)}<strong>${IND[r.id].curto} <small class="muted">manter F${r.L}</small></strong><span class="gv">${tipoDe(r.id) === 'brl' ? fBRLk(r.valor) : nf(r.valor)}<small>mínimo/mês</small></span>${meter(r.base / r.valor, 'atencao')}</li>`).join('')}</ol>
+    <p class="muted" style="font-size:.74rem">A barra mostra quanto da necessidade mensal a média atual já cobre.</p>` : '<p class="muted">Todos os indicadores estão na faixa máxima e sem risco.</p>';
+  $('#i-class').innerHTML = `<table class="t compact"><thead><tr><th>Pedra</th><th class="n">Pontos</th><th class="n">Receita Telecom</th><th class="n">Bônus</th><th>QSC ≥ ${R.qscMin}</th></tr></thead><tbody>${R.classes.map((c, k) => ({ c, k })).reverse().map(({ c, k }) => `<tr class="${k === res.k ? 'atual' : ''}"><td><b>${c.nome}</b>${k === res.k ? ' <span class="chip info">atual</span>' : k === res.kPts && res.kPts !== res.k ? ' <span class="chip media">pelos pontos</span>' : ''}</td><td class="n">${nf(c.min)}</td><td class="n">${c.receita ? fBRLk(c.receita) : '—'}</td><td class="n">${nf(c.bonus, 1)}%</td><td>${c.qsc ? 'Obrigatório' : '—'}</td></tr>`).join('')}</tbody></table>`;
+  $('#i-exp').innerHTML = `<ol class="exp">
+    <li><span class="num">1</span><div><b>A faixa vale pelo valor mínimo.</b><span>Cada indicador pontua pela faixa que a média do ciclo atinge. Abaixo da Faixa 1, a pontuação é zero.</span></div></li>
+    <li><span class="num">2</span><div><b>Conta a média do ciclo semestral.</b><span>Jan–Jun e Jul–Dez. Receitas arredondadas para cima com 2 casas; notas de QSC, para cima sem casas.</span></div></li>
+    <li><span class="num">3</span><div><b>A pedra exige pontos e receita.</b><span>Até ${nf(mp)} pontos no total. A partir de Ouro também é preciso Receita Telecom média mínima.</span></div></li>
+    <li><span class="num">4</span><div><b>QSC mínimo para as pedras altas.</b><span>Diamante, Platinum e V exigem nota ≥ ${R.qscMin} em todos os QSC; sem isso, a classificação fica em Ouro.</span></div></li>
+  </ol>`;
+}
+function copiarTabela(btn) {
+  const { res, R } = S.calc;
+  const linhas = [['Indicador', 'Média do ciclo', 'Faixa', 'Pontos', 'Máximo'].join('\t')]
+    .concat(linhasIndicadores().map(i => { const q = res.por[i.id]; return [i.nome, fmtI(i.id, q.media), q.L ? 'Faixa ' + q.L : 'Abaixo da Faixa 1', nf(q.pts), nf(q.max)].join('\t'); }));
+  const fim = t => { btn.lastChild.textContent = t; setTimeout(() => { btn.lastChild.textContent = 'Copiar tabela'; }, 1800); };
+  try { navigator.clipboard.writeText(linhas.join('\n')).then(() => fim('Copiada'), () => fim('Não foi possível copiar')); } catch (e) { fim('Não foi possível copiar'); }
+}
+
+// ===== Qualidade (QSC) =====
+const TITULOS_QSC = [['qscFixa', 'Resumo Banda Larga'], ['qscMovel', 'Resumo Móvel'], ['qscCarteira', 'Resumo Carteira']];
+const faixasTxt = c => (c.dir === 'maior'
+  ? `≥ ${nf(c.lims[0], 2)}%: ${c.pts[0]} · ≥ ${nf(c.lims[1], 2)}%: ${c.pts[1]} · ≥ ${nf(c.lims[2], 2)}%: ${c.pts[2]} · abaixo: ${c.pts[3]}`
+  : `< ${nf(c.lims[0], 2)}%: ${c.pts[0]} · < ${nf(c.lims[1], 2)}%: ${c.pts[1]} · < ${nf(c.lims[2], 2)}%: ${c.pts[2]} · acima: ${c.pts[3]}`);
+function montarQsc() {
+  const { R, ci } = S.calc;
+  $('#q-sub').textContent = `Notas de ${rotChave(ci.atual)} calculadas pelos componentes do Quality Score Card. ${S.qscFonte === 'exemplo' ? 'Valores copiados do print do relatório QSC 202610.' : S.qscFonte === 'arquivo' ? 'Valores importados do relatório QSC.' : 'Valores digitados.'}`;
+  $('#q-cards').innerHTML = TITULOS_QSC.map(([id, tit]) => `<section class="card"><div class="ch"><span class="tile sm">${ic(IND[id].icone)}</span><div><h2>${tit}</h2><p>${IND[id].nome} · ${rotChave(ci.atual)}</p></div><span class="chip more" id="q-tot-${id}"></span></div>
+    <div class="tw"><table class="t qsct"><thead><tr><th>Componente</th><th class="n">KPI 1</th><th class="n">KPI 2</th><th class="n">%</th><th class="n">Nota</th></tr></thead><tbody>${R.qsc[id].map(c => {
+      const d = (S.qsc[id] || {})[c.id] || [];
+      return `<tr><th scope="row" title="${esc(faixasTxt(c))}">${c.nome}<small>até ${Math.max(...c.pts)} pts · ${c.dir === 'maior' ? 'maior é melhor' : 'menor é melhor'}</small></th>
+        <td class="n"><input type="number" id="qk-${id}-${c.id}-0" data-q="${id}" data-c="${c.id}" data-k="0" value="${d[0] ?? ''}" min="0" step="1" aria-label="${c.nome}, KPI 1"></td>
+        <td class="n"><input type="number" id="qk-${id}-${c.id}-1" data-q="${id}" data-c="${c.id}" data-k="1" value="${d[1] ?? ''}" min="0" step="1" aria-label="${c.nome}, KPI 2"></td>
+        <td class="n" id="qp-${id}-${c.id}"></td><td class="n" id="qn-${id}-${c.id}"></td></tr>`;
+    }).join('')}<tr class="tot"><th scope="row">Total</th><td></td><td></td><td></td><td class="n" id="qt-${id}"></td></tr></tbody></table></div></section>`).join('');
+  atualizarQsc();
+}
+function atualizarQsc() {
+  const { qn, R, res, vm, ci, atual } = S.calc, v = vm[ci.atual], min = minEleg(R);
+  for (const [id] of TITULOS_QSC) {
+    qn[id].comps.forEach(x => {
+      $(`#qp-${id}-${x.c.id}`).textContent = x.pct == null ? '—' : nf(x.pct, 2) + '%';
+      $(`#qn-${id}-${x.c.id}`).innerHTML = x.nota == null ? '—' : `<span class="nt t${x.tier}">${nf(x.nota)}</span>`;
+    });
+    const n = qn[id].nota, L = faixaInd(id, n, R);
+    $(`#qt-${id}`).innerHTML = n == null ? '—' : `<b>${nf(n)}</b>`;
+    const t = $(`#q-tot-${id}`);
+    t.className = `chip more ${n == null ? 'sem' : L >= 5 ? 'ok' : L >= 3 ? 'info' : 'erro'}`;
+    t.textContent = n == null ? 'Sem dados' : L ? `Faixa ${L} no mês` : 'Abaixo da Faixa 1';
+  }
+  $('#q-kpis').innerHTML = TITULOS_QSC.map(([id]) => {
+    const n = qn[id].nota, q = res.por[id], fixa = id === 'qscFixa';
+    const eleg = fixa ? `<br>Altas de FTTH no mês: <b>${v.ftth == null ? '—' : nf(v.ftth)}</b> (mínimo ${min} para ${R.vigente}) ${v.elegFixa ? '<span class="up">✓</span>' : '<span class="down">nota do mês zerada</span>'}` : '';
+    return kpi(IND[id].icone, q.media != null && q.media < R.qscMin ? 'bad' : '', IND[id].nome, n == null ? '—' : nf(n), `de ${maxNota(id, R)} no mês`, `Média do ciclo: <b>${q.media == null ? '—' : nf(q.media)}</b> → ${q.L ? `Faixa ${q.L} · ${nf(q.pts)} pts` : 'sem pontos'}${qn[id].completo ? '' : '<br><span class="down">Faltam componentes no mês</span>'}${eleg}`);
+  }).join('');
+  const gs = ganhosQsc();
+  $('#q-ganhos').innerHTML = gs.length ? gs.slice(0, 8).map(g => `<div class="ganho"><b>${g.c.nome} <span class="muted" style="font-weight:500">· ${IND[g.id].curto}</span></b><span class="imp">+${nf(g.ganho)}</span>
+    <span>${nf(g.pct, 2)}% → ${g.c.dir === 'maior' ? '' : 'abaixo de '}${nf(g.alvo, 2)}%: KPI 1 de ${nf(g.k1)} para ${nf(g.novo)} (${g.delta >= 0 ? '+' : '−'}${nf(Math.abs(g.delta))})</span><span></span></div>`).join('') : '<p class="muted">Todos os componentes estão na faixa máxima.</p>';
+  $('#q-regras').innerHTML = `<ul class="regl">
+    <li>${ic('check', 16)}<span>A nota do mês é a soma dos pontos dos componentes. O QSC Carteira vai até 105 por causa do bônus de Aproveitamento de Carteira.</span></li>
+    <li>${ic('check', 16)}<span>No ciclo vale a média mensal das notas, arredondada para cima: 50 → 200 pts · 60 → 400 · 70 → 600 · 80 → 800 · 90 → 1.000.</span></li>
+    <li>${ic('check', 16)}<span>Diamante, Platinum e V exigem média ≥ ${R.qscMin} em todos os QSC; sem isso a classificação fica em Ouro.</span></li>
+    <li>${ic('check', 16)}<span>QSC Fixa: no mês com menos de ${R.classes.map(c => c.eleg).filter((x, i, a) => a.indexOf(x) === i).join(', ')} altas líquidas de FTTH (conforme a pedra; ${R.vigente}: ${min}), a nota do mês é zero.</span></li>
+    <li>${ic('check', 16)}<span>Passe o mouse sobre o nome do componente para ver as faixas. Elas podem ser ajustadas em Regras.</span></li>
+  </ul>`;
+}
+const meter = (a, st, w) => `<div class="meter st-${st}"><b>${a == null ? '—' : nf(a * 100, 0) + '%'}</b><span class="bar"><i style="width:${clamp((w ?? a ?? 0) * 100, 0, 100)}%"></i></span></div>`;
+
+// ===== Simulador =====
+const CENARIOS = [['conservador', 'Conservador', 'Repete o pior mês'], ['provavel', 'Provável', 'Repete a média do ciclo'], ['agressivo', 'Agressivo', 'Repete o melhor mês']];
+function aplicarCenario(nome) { S.cenario = nome; S.fut = cenarioFuturo(nome, S.calc.ci, S.calc.vm); }
+function faixaSlider(i) {
+  const { R, res } = S.calc, f5 = R.ind[i.id].faixas[4], base = res.por[i.id].n ? soma(res.por[i.id].vals) / res.por[i.id].n : 0, x = S.fut[i.id] || 0;
+  if (i.tipo === 'nota') return { max: maxNota(i.id, R), step: 1 };
+  const mx = Math.max(f5 * 1.5, base * 1.5, x * 1.2);
+  if (i.tipo === 'brl') { const st = mx > 50000 ? 1000 : 10; return { max: Math.ceil(mx / st) * st, step: st }; }
+  return { max: Math.ceil(mx / 10) * 10, step: 1 };
+}
+function montarSim() {
+  if (!S.fut) aplicarCenario(S.cenario);
+  const { ci, res } = S.calc, rr = rotRest();
+  $('#s-sub').textContent = rr ? `Defina o resultado de cada mês em ${rr} e veja a classificação no fechamento do ${ci.nome}.` : 'Não há meses restantes neste ciclo: o simulador mostra o resultado fechado.';
+  $('#s-cen').innerHTML = '<span>Meses restantes</span>' + CENARIOS.map(([id, t, s]) => `<button type="button" data-cen="${id}" aria-pressed="${S.cenario === id}">${ic(id === 'agressivo' ? 'trend' : 'chart', 20)}<span><b>${t}</b><small>${s}</small></span></button>`).join('');
+  $('#s-tab').innerHTML = `<table class="t simt"><thead><tr><th>Indicador</th><th class="n">Média até agora</th><th style="width:26%">Por mês${rr ? ' em ' + rr : ''}</th><th></th><th class="n">Média no fechamento</th><th>Faixa</th><th class="n">Pontos</th></tr></thead><tbody>${INDICADORES.map(i => {
+    const q = res.por[i.id];
+    if (!q.n || S.fut[i.id] == null) return `<tr><td><span class="iname">${ic(i.icone)}${i.curto}</span></td><td class="n">—</td><td colspan="5" class="muted">Sem dados no ciclo</td></tr>`;
+    const f = faixaSlider(i), x = S.fut[i.id];
+    return `<tr><td><span class="iname">${ic(i.icone)}${i.curto}</span></td><td class="n">${fmtI(i.id, soma(q.vals) / q.n)}</td>
+      <td><input type="range" id="sr-${i.id}" data-sim="${i.id}" min="0" max="${f.max}" step="${f.step}" value="${x}" aria-label="Valor mensal de ${i.curto}"${rr ? '' : ' disabled'}></td>
+      <td><input type="number" id="sn-${i.id}" data-simn="${i.id}" min="0" step="${f.step}" value="${x}" aria-label="Valor mensal de ${i.curto}"${rr ? '' : ' disabled'}></td>
+      <td class="n" id="sm-${i.id}"></td><td id="sf-${i.id}"></td><td class="n" id="sp-${i.id}"></td></tr>`;
+  }).join('')}</tbody></table>`;
+  renderEsforco();
+  atualizarSim();
+}
+function atualizarSim() {
+  const { ci, vm, res, R, evol } = S.calc, fim = apurar(ci, vmComFuturo(ci, vm, S.fut, R), R, ci.meses[ci.meses.length - 1]), dif = fim.total - res.total;
+  for (const i of INDICADORES) {
+    const a = res.por[i.id], b = fim.por[i.id], cell = $('#sm-' + i.id);
+    if (!cell) continue;
+    cell.innerHTML = `<b>${fmtI(i.id, b.media)}</b>`;
+    $('#sf-' + i.id).innerHTML = fx(b.L) + (b.L !== a.L ? ` <span class="${b.L > a.L ? 'up' : 'down'}">${b.L > a.L ? '▲' : '▼'}</span>` : '');
+    const d = b.pts - a.pts;
+    $('#sp-' + i.id).innerHTML = `${nf(b.pts)} <span class="imp${d === 0 ? ' zero' : d < 0 ? ' neg' : ''}">${d >= 0 ? '+' : '−'}${nf(Math.abs(d))}</span>`;
+  }
+  const lim = fim.k < fim.kPts ? (fim.k === fim.kRec ? 'pela Receita Telecom' : 'pelo QSC') : '', reqF = requisitos(fim, R);
+  $('#s-kpis').innerHTML =
+    kpi('gem', 'gold', 'Classificação no fechamento', fim.classe.nome, `bônus de ${nf(fim.classe.bonus, 1)}%`, `Hoje: <b>${res.classe.nome}</b>${lim ? `<br>Limitada ${lim} (pontos dariam ${R.classes[fim.kPts].nome})` : ''}`)
+    + kpi('chart', '', 'Pontuação no fechamento', nf(fim.total), `de ${nf(maxPontos(R))}`, variacao(dif, 'vs. hoje'))
+    + kpi('receipt', '', 'Receita Telecom média', fBRLc(fim.rec), 'no fechamento', `Hoje: ${fBRLc(res.rec)}`)
+    + kpi('trophy', 'gold', 'Próxima pedra', fim.prox ? fim.prox.nome : '—', '', fim.prox ? reqF.map(reqTxt).join('<br>') : 'Classificação máxima');
+  grafPct($('#s-barras'), INDICADORES.filter(i => res.por[i.id].n).map(i => ({ rot: i.curto.replace('Receita ', '').replace('QSC ', 'QSC '), a: res.por[i.id].pts / res.por[i.id].max, b: fim.por[i.id].pts / fim.por[i.id].max })));
+  grafLinha($('#s-evol'), evol, { h: 230, sim: { x: 'Fechamento', y: fim.total }, ref: res.prox ? { y: res.prox.min, rot: `${res.prox.nome} · ${nf(res.prox.min)} pts` } : null, titulo: 'Pontuação com o cenário simulado' });
+  const imp = INDICADORES.map(i => ({ i, a: res.por[i.id], b: fim.por[i.id] })).filter(o => o.a.pts !== o.b.pts).sort((x, y) => Math.abs(y.b.pts - y.a.pts) - Math.abs(x.b.pts - x.a.pts));
+  $('#s-ins').innerHTML = `<ol class="ins">${imp.slice(0, 3).map((o, k) => `<li><span class="num">${k + 1}</span><p><b>${o.i.curto}</b> fecha na Faixa ${o.b.L} com média de ${fmtI(o.i.id, o.b.media)}: ${o.b.pts > o.a.pts ? 'ganha' : 'perde'} <b>${nf(Math.abs(o.b.pts - o.a.pts))} pts</b>.</p><span class="chip ${o.b.pts > o.a.pts ? 'ok' : 'erro'}">${o.b.pts > o.a.pts ? 'Ganho' : 'Perda'}</span></li>`).join('')}
+    <li><span class="num">${Math.min(imp.length, 3) + 1}</span><p>No fechamento a classificação fica em <b>${fim.classe.nome}</b> (bônus de ${nf(fim.classe.bonus, 1)}%)${lim ? `, limitada ${lim}` : ''}.</p><span class="chip ${fim.k > res.k ? 'ok' : fim.k < res.k ? 'erro' : 'info'}">${fim.k > res.k ? 'Sobe de pedra' : fim.k < res.k ? 'Cai de pedra' : 'Mesma pedra'}</span></li></ol>`;
+}
+function grafPct(el, grupos) {
+  const W = el.clientWidth; if (!W) return;
+  const H = 240, m = { t: 12, r: 6, b: 34, l: 38 }, Y = v => m.t + (100 - v) / 100 * (H - m.t - m.b), gw = (W - m.l - m.r) / grupos.length, bw = clamp(gw * 0.28, 5, 20);
+  let g = '';
+  for (let v = 0; v <= 100; v += 25) g += `<line class="gl" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${v}%</text>`;
+  const barra = (x, v, cls, k, s) => { const y0 = Y(0), h = Math.max(0, y0 - Y(v)), r = Math.min(4, h / 2, bw / 2); return `<path class="${cls}" data-k="${k}" data-s="${s}" d="M${x},${y0}V${y0 - h + r}Q${x},${y0 - h} ${x + r},${y0 - h}H${x + bw - r}Q${x + bw},${y0 - h} ${x + bw},${y0 - h + r}V${y0}Z"/>`; };
+  grupos.forEach((gr, k) => {
+    const cx = m.l + gw * k + gw / 2;
+    g += barra(cx - bw - 1, gr.a * 100, 'b-a', k, 'a') + barra(cx + 1, gr.b * 100, 'b-b', k, 'b');
+    const pal = gr.rot.split(' ');
+    g += `<text class="ax" x="${cx}" y="${H - 20}" text-anchor="middle">${esc(pal[0])}</text>${pal[1] ? `<text class="ax" x="${cx}" y="${H - 7}" text-anchor="middle">${esc(pal.slice(1).join(' '))}</text>` : ''}`;
+  });
+  el.innerHTML = `<svg width="${W}" height="${H}" role="img" aria-label="Percentual dos pontos máximos por indicador, hoje e no fechamento">${g}</svg>`;
+  const tip = dica(el);
+  el.querySelectorAll('path[data-k]').forEach(p => {
+    p.addEventListener('mousemove', ev => { const gr = grupos[+p.dataset.k], b = el.getBoundingClientRect(); tip.textContent = `${gr.rot} · ${p.dataset.s === 'a' ? 'Até agora' : 'Fechamento'}: ${nf((p.dataset.s === 'a' ? gr.a : gr.b) * 100, 0)}% dos pontos`; tip.style.left = (ev.clientX - b.left) + 'px'; tip.style.top = (ev.clientY - b.top) + 'px'; tip.classList.add('on'); });
+    p.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  });
+}
+function renderEsforco() {
+  const { res } = S.calc, p = res.prox, el = $('#s-esf'), rr = rotRest();
+  const topo = t => `<div class="ch"><span class="tile sm gold">${ic('trophy')}</span><h2>${t}</h2>${p && rr ? '<span class="chip media more">Caminho mais curto</span>' : ''}</div>`;
+  if (!p) { el.innerHTML = topo('Classificação máxima') + '<div class="cb"><p>A classificação já está na pedra mais alta.</p></div>'; return; }
+  if (!rr) { el.innerHTML = topo('Ciclo encerrado') + '<div class="cb"><p>Não há meses restantes para mudar a classificação.</p></div>'; return; }
+  const itens = planoProxima();
+  S.planoEsf = itens;
+  if (!itens.length) { el.innerHTML = topo(`O que falta para ${p.nome}`) + '<div class="cb"><p>Ainda não há dados suficientes no ciclo para calcular o caminho. Complete a Apuração do Ciclo.</p></div>'; return; }
+  el.innerHTML = topo(`O que falta para ${p.nome}`) + `<div class="cb"><p>Para chegar a ${p.nome} (bônus de ${nf(p.bonus, 1)}%), cada mês de ${rr} precisa de:</p>
+    ${itens.map(it => `<div class="esf-act"><span class="tile sm">${ic(IND[it.id].icone)}</span><strong>${it.txt}<br><span class="muted" style="font-weight:500;font-size:.78rem">${it.sub}</span></strong></div>`).join('')}
+    <p>Os demais indicadores seguem o cenário Provável.</p>
+    <button type="button" class="btn primary sm" id="s-aplicar" style="justify-self:start">Simular este caminho</button></div>`;
+}
+function simularPlano(plano) {
+  aplicarCenario('provavel');
+  for (const [id, v] of Object.entries(plano)) if (v != null) S.fut[id] = v;
+  S.cenario = 'personalizado';
+}
+
+// ===== Apuração do ciclo =====
+const CAMPOS_AP = [['telecom', 'Receita Telecom / TI Rec. / Loc.', 'brl'], ['eletronicos', 'Receita Eletrônicos / One Shot', 'brl'], ['ftth', 'Físicos FTTH', 'qtd'], ['novos', 'Receita Novos Produtos', 'brl'], ['fdvQtd', 'FDV elegível (consultores)', 'qtd'], ['fdv', 'Receita / FDV', 'calc'], ['qscCarteira', 'QSC Carteira', 'nota'], ['qscMovel', 'QSC Móvel', 'nota'], ['qscFixa', 'QSC Fixa', 'nota']];
+function montarApuracao() {
+  const { ci, vm, atual, corte } = S.calc;
+  $('#ap-sub').textContent = `${ci.nome} (${ci.rot}) · dados até ${fData(corte)} · mês atual ${S.modo === 'projetado' ? 'projetado até o fim do mês' : 'realizado até hoje'}`;
+  const cab = ci.meses.map(k => { const v = vm[k]; return `<th class="n">${rotChave(k)}<small>${v.futuro ? '<span class="chip sem">Futuro</span>' : v.atual ? '<span class="chip info">Atual</span>' : v.manual ? `<span class="chip ${S.mesesExemplo ? 'ex' : 'ok'}">${S.mesesExemplo ? 'Exemplo' : 'Informado'}</span>` : '<span class="chip erro">Sem dados</span>'}</small></th>`; }).join('');
+  $('#ap-tab').innerHTML = `<table class="t apt"><thead><tr><th>Indicador</th>${cab}<th class="n">Média do ciclo</th><th>Faixa</th><th class="n">Pontos</th></tr></thead><tbody>${CAMPOS_AP.map(([c, rot, tipo]) => {
+    const cel = ci.meses.map(k => {
+      const v = vm[k];
+      if (v.futuro) return '<td class="n muted">—</td>';
+      if (tipo === 'calc') return `<td class="n" id="ap-${c}-${k}"></td>`;
+      const man = (S.meses[k] || {})[c], ph = v.atual && atual[c] != null ? (tipo === 'brl' ? nf(atual[c], 2) : nf(atual[c])) : '';
+      return `<td class="n${c === 'qscFixa' && !v.elegFixa ? ' inel' : ''}" id="apc-${c}-${k}"${c === 'qscFixa' && !v.elegFixa ? ` title="Altas de FTTH abaixo do mínimo: nota do mês zerada"` : ''}><input type="number" data-ap="${k}" data-campo="${c}" value="${man ?? ''}" placeholder="${ph}" step="${tipo === 'brl' ? '0.01' : '1'}" min="0" aria-label="${rot}, ${rotChave(k)}"${v.atual ? ' title="Calculado pelos relatórios; digite para substituir"' : ''}></td>`;
+    }).join('');
+    const ind = IND[c];
+    return `<tr><th scope="row">${rot}${v0(c)}</th>${cel}<td class="n" id="apm-${c}">${ind ? '' : '—'}</td><td id="apf-${c}">${ind ? '' : '—'}</td><td class="n" id="app-${c}">${ind ? '' : '—'}</td></tr>`;
+  }).join('')}</tbody></table>`;
+  atualizarApuracao();
+  montarOficial();
+}
+const v0 = c => (c === 'fdvQtd' ? '<small class="muted" style="display:block;font-weight:500">CLT há mais de 90 dias</small>' : c === 'fdv' ? '<small class="muted" style="display:block;font-weight:500">calculada</small>' : '');
+function atualizarApuracao() {
+  const { ci, vm, res } = S.calc;
+  for (const k of ci.meses) {
+    const v = vm[k];
+    if (v.futuro) continue;
+    const el = $(`#ap-fdv-${k}`);
+    if (el) el.textContent = v.fdv == null ? '—' : fBRL(v.fdv);
+    const fx2 = $(`#apc-qscFixa-${k}`);
+    if (fx2) fx2.classList.toggle('inel', !v.elegFixa);
+  }
+  for (const i of INDICADORES) {
+    const q = res.por[i.id];
+    $(`#apm-${i.id}`).innerHTML = `<b>${fmtI(i.id, q.media)}</b>`;
+    $(`#apf-${i.id}`).innerHTML = fx(q.L);
+    $(`#app-${i.id}`).innerHTML = `<b>${nf(q.pts)}</b>`;
+  }
+}
+function montarOficial() {
+  const of = S.oficial;
+  $('#ap-oficial').innerHTML = `<div class="basebox">
+    <div class="fld"><label for="of-data">Data da última atualização</label><input type="date" id="of-data" value="${of.data == null ? '' : isoDe(of.data)}"></div>
+    <div class="fld"><label for="of-pontos">Pontuação na base oficial</label><input type="number" id="of-pontos" min="0" step="1" value="${of.pontos ?? ''}" style="width:130px"></div>
+    <span class="arrow">${ic('arrow', 20)}</span>
+    <div class="dias"><b id="of-dif"></b><span id="of-dif-t"></span></div></div>
+    <p class="muted" style="font-size:.78rem" id="of-prox"></p>`;
+  atualizarOficial();
+}
+function atualizarOficial() {
+  const of = S.oficial, { res } = S.calc;
+  if (of.pontos == null) { $('#of-dif').textContent = '—'; $('#of-dif-t').textContent = 'informe a pontuação oficial'; }
+  else { const d = res.total - of.pontos; $('#of-dif').textContent = (d > 0 ? '+' : d < 0 ? '−' : '') + nf(Math.abs(d)); $('#of-dif-t').textContent = `pts da estimativa (${nf(res.total)}) em relação à base oficial`; }
+  $('#of-prox').textContent = of.data == null ? '' : `Próxima atualização prevista: ${fData(of.data + 7)}${of.exemplo ? ' · valores de exemplo' : ''}.`;
+}
+// ===== Importações =====
+const hora = d => d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const FAM = { telecom: ['Receita Telecom', 'info'], eletronicos: ['Eletrônicos', 'media'], novos: ['Novos Produtos', 'ok'], outro: ['Não considerado', 'erro'] };
+function vbox(icone, tom, n, rot, sub) { return `<div class="vbox"><span class="tile sm ${tom}">${ic(icone)}</span><div><b>${nf(n)}</b><span>${rot}</span><small>${sub}</small></div></div>`; }
+function amostra(r, c) {
+  const col = r.mapa[c.key];
+  if (!col) return { txt: '', erro: false };
+  const row = r.linhas.find(x => String(x[col] ?? '').trim() !== '');
+  if (!row) return { txt: '(coluna vazia)', erro: true };
+  const b = row[col];
+  if (c.tipo === 'data') { const d = lerData(b); return d == null ? { txt: `não reconhecido: ${b}`, erro: true } : { txt: fData(d), erro: false }; }
+  if (c.tipo === 'valor') { const n = lerNumero(b); return n == null ? { txt: `não reconhecido: ${b}`, erro: true } : { txt: nf(n, 2), erro: false }; }
+  return { txt: String(b), erro: false };
+}
+function renderImportacoes() {
+  const { corte, A } = S.calc, r = S.rep, v = validar('altas', r, corte), pc = x => (v.total ? nf(x / v.total * 100, 1) + '% do total' : '—');
+  $('#v-box').innerHTML = `<p class="muted" style="font-size:.78rem">${r.origem === 'exemplo' ? 'Dados de exemplo' : esc(r.arquivo || 'Nenhum arquivo carregado')} · ${pl(v.total, 'linha', 'linhas')}</p><div class="vgrid">
+    ${vbox('check', 'good', v.validas, 'Linhas válidas', pc(v.validas))}${vbox('alertc', 'bad', v.dup, 'Duplicadas', pc(v.dup))}
+    ${vbox('alert', 'warn', v.faltando, 'Campos faltantes', pc(v.faltando))}${vbox('calendar', '', v.fora, 'Fora do mês apurado', pc(v.fora))}</div>`;
+  document.querySelectorAll('#imp-tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === S.abaImp)));
+  let corpo = '';
+  if (S.abaImp === 'arquivos') {
+    const t = r.origem === 'exemplo' ? ['ex', 'EX', 'Exemplo'] : /\.(csv|txt)$/i.test(r.arquivo) ? ['csv', 'CSV', 'CSV'] : ['xls', 'XLS', 'Excel'];
+    const ok = pronto('altas', r);
+    corpo = `<div class="tw"><table class="t"><thead><tr><th>Arquivo</th><th>Conteúdo</th><th>Tipo</th><th>Status</th><th class="n">Registros</th><th class="n">Alertas</th><th>Carregado em</th><th>Ações</th></tr></thead><tbody>
+      <tr><td><span class="fname"><span class="ftype ${t[0]}">${t[1]}</span>${r.origem === 'exemplo' ? 'exemplo_altas_outubro' : esc(r.arquivo || 'Nenhum arquivo carregado')}</span></td><td>Altas do mês</td><td>${t[2]}</td>
+        <td>${r.origem === 'exemplo' ? '<span class="chip ex">Exemplo</span>' : ok ? `<span class="chip ok">${ic('check', 13)}Processado</span>` : r.origem === 'vazio' ? '<span class="chip sem">Aguardando arquivo</span>' : `<span class="chip erro">${ic('alertc', 13)}Falta coluna</span>`}</td>
+        <td class="n">${nf(r.linhas.length)}</td><td class="n ${v.dup + v.faltando ? 'down' : ''}">${nf(v.dup + v.faltando)}</td><td>${hora(r.quando)}</td>
+        <td><button type="button" class="btn sm" data-pick="altas">${r.origem === 'exemplo' ? 'Carregar' : 'Substituir'}</button>${r.origem === 'exemplo' ? '' : ' <button type="button" class="btn sm" data-reset="altas">Voltar ao exemplo</button>'}</td></tr>
+      <tr><td><span class="fname"><span class="ftype ${S.qscFonte === 'arquivo' ? 'xls' : 'ex'}">QSC</span>${S.qscFonte === 'arquivo' ? esc(S.qscArquivo) : S.qscFonte === 'exemplo' ? 'print_qsc_202610' : 'digitado na tela Qualidade'}</span></td><td>Quality Score Card</td><td>${S.qscFonte === 'arquivo' ? 'Arquivo' : S.qscFonte === 'exemplo' ? 'Exemplo' : 'Manual'}</td>
+        <td><span class="chip ${S.qscFonte === 'exemplo' ? 'ex' : 'ok'}">${S.qscFonte === 'exemplo' ? 'Exemplo' : 'Processado'}</span></td><td class="n">${QSCS.reduce((s, id) => s + Object.keys(S.qsc[id] || {}).length, 0)}</td><td class="n">—</td><td>${hora(S.qscQuando)}</td>
+        <td><button type="button" class="btn sm" data-ir="qualidade">Abrir QSC</button></td></tr>
+    </tbody></table></div><input type="file" id="file-altas" data-slot="altas" accept=".xlsx,.xls,.csv,.txt" hidden>`;
+  } else if (S.abaImp === 'produtos') {
+    const ps = [...A.produtos.values()].sort((a, b) => b.valor - a.valor);
+    corpo = ps.length ? `<div class="tw"><table class="t"><thead><tr><th>Produto</th><th>Família</th><th>Conta em Físicos FTTH</th><th class="n">Linhas</th><th class="n">Quantidade</th><th class="n">Valor total</th></tr></thead><tbody>${ps.map(p => `<tr><td class="wrap"><b>${esc(p.prod)}</b></td><td><span class="chip ${FAM[p.fam][1]}">${FAM[p.fam][0]}</span></td><td>${p.ftth ? '<span class="okc">Sim</span>' : '—'}</td><td class="n">${nf(p.linhas)}</td><td class="n">${nf(p.qtd)}</td><td class="n">${fBRL(p.valor)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="muted" style="padding:10px 20px 16px;font-size:.78rem">Produtos do mês apurado. Ajuste as palavras de cada família em Regras se algum produto cair no lugar errado.</p>` : '<p class="vazio">Nenhuma alta no mês apurado.</p>';
+  } else if (S.abaImp === 'mapa') {
+    const d = DEF.altas;
+    corpo = `<div class="maps" style="grid-template-columns:minmax(0,1fr)"><div class="mapc"><h3>${d.nome}<span class="chip ${r.origem === 'exemplo' ? 'ex' : pronto('altas', r) ? 'ok' : 'erro'}">${r.origem === 'exemplo' ? 'Exemplo' : pronto('altas', r) ? 'Completo' : 'Falta coluna'}</span></h3>
+      <div class="tw"><table class="t"><thead><tr><th>Campo</th><th>Coluna no arquivo</th><th>1º valor lido</th></tr></thead><tbody>${d.campos.map(c => {
+        const col = r.mapa[c.key], am = amostra(r, c);
+        return `<tr class="${!col && c.req ? 'falta-campo' : ''}"><th scope="row">${c.label}${c.req ? '' : ' <small class="muted">(opcional)</small>'}</th>
+          <td><select data-rel="altas" data-campo="${c.key}" aria-label="Coluna para ${c.label}"><option value="">${c.req ? 'Escolha a coluna' : 'Não usar'}</option>${r.cabecalhos.map(h => `<option value="${esc(h)}"${h === col ? ' selected' : ''}>${esc(h)}</option>`).join('')}</select></td>
+          <td class="am${am.erro ? ' erro' : ''}">${esc(am.txt)}</td></tr>`;
+      }).join('')}</tbody></table></div></div></div>`;
+  } else {
+    corpo = `<div class="tw"><table class="t"><thead><tr><th>Data e hora</th><th>Evento</th><th>Status</th></tr></thead><tbody>${S.log.map(l => `<tr><td>${hora(l.quando)}</td><td class="wrap">${esc(l.txt)}</td><td><span class="chip ${l.st}">${{ ok: 'Processado', erro: 'Erro', ex: 'Exemplo', info: 'Ajuste' }[l.st]}</span></td></tr>`).join('')}</tbody></table></div>`;
+  }
+  $('#imp-body').innerHTML = corpo;
+}
+async function lerPlanilha(f) {
+  if (/\.(csv|txt)$/i.test(f.name)) {
+    const buf = await f.arrayBuffer();
+    let txt = new TextDecoder('utf-8').decode(buf);
+    if (txt.includes(String.fromCharCode(0xFFFD))) txt = new TextDecoder('windows-1252').decode(buf);
+    return { aba: 'CSV', aoa: lerCSV(txt) };
+  }
+  if (typeof XLSX === 'undefined') throw new Error('o leitor de Excel não carregou. Salve o relatório como CSV e tente de novo.');
+  const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
+  let melhor = null;
+  for (const n of wb.SheetNames) {
+    const a = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: '', raw: true, blankrows: false });
+    if (!melhor || a.length > melhor.aoa.length) melhor = { aba: n, aoa: a };
+  }
+  if (!melhor) throw new Error('nenhuma aba com dados.');
+  return melhor;
+}
+function acharComp(t, R) {
+  for (const q of QSCS) for (const c of R.qsc[q]) if (c.alias.some(a => t === a || (a.length >= 8 && t.includes(a)))) return { q, c };
+  return null;
+}
+function lerQsc(aoa, R) { // procura o nome de cada componente e usa os dois números seguintes como KPI 1 e KPI 2
+  const dados = {}, achados = [];
+  for (const row of aoa) {
+    for (let j = 0; j < row.length; j++) {
+      const t = norm(row[j]);
+      if (!t || /^\d/.test(t)) continue;
+      const hit = acharComp(t, R);
+      if (!hit) continue;
+      const nums = row.slice(j + 1).map(x => (typeof x === 'number' ? x : lerNumero(x))).filter(x => x != null && isFinite(x));
+      if (nums.length >= 2) { (dados[hit.q] = dados[hit.q] || {})[hit.c.id] = [nums[0], nums[1]]; achados.push(hit.c.nome); }
+      break;
+    }
+  }
+  return { dados, n: achados.length };
+}
+async function receber(files, slot) {
+  const msgs = [];
+  for (const f of files) {
+    try {
+      const { aba, aoa } = await lerPlanilha(f), q = slot ? { n: 0 } : lerQsc(aoa, S.R);
+      if (q.n >= 3) {
+        for (const id of QSCS) S.qsc[id] = { ...(S.qsc[id] || {}), ...(q.dados[id] || {}) };
+        S.qscFonte = 'arquivo'; S.qscArquivo = f.name; S.qscQuando = new Date();
+        msgs.push({ txt: `${f.name} → QSC (${pl(q.n, 'componente', 'componentes')} preenchidos)` });
+        continue;
+      }
+      const t = tabular(aoa), c = classificar(t.cabecalhos), mapa = c ? c.mapa : autoMapear(t.cabecalhos, DEF.altas.campos);
+      S.rep = { origem: 'arquivo', arquivo: f.name, aba, quando: new Date(), cabecalhos: t.cabecalhos, linhas: t.linhas, mapa };
+      msgs.push({ erro: !c, txt: c ? `${f.name} → Altas do mês (${pl(t.linhas.length, 'linha', 'linhas')})` : `${f.name}: carregado como altas, mas faltam colunas. Escolha em Mapeamento de Colunas.` });
+    } catch (err) {
+      msgs.push({ erro: true, txt: `${f.name}: ${err.message}` });
+    }
+  }
+  msgs.forEach(m => S.log.unshift({ quando: new Date(), txt: m.txt, st: m.erro ? 'erro' : 'ok' }));
+  $('#rep-msg').innerHTML = msgs.map(m => `<li class="${m.erro ? 'erro' : ''}">${esc(m.txt)}</li>`).join('');
+  atualizar();
+}
+
+// ===== Alertas =====
+function alertas() {
+  const { res, R, ci, vm, reqs, A, qn } = S.calc, out = [], rr = rotRest(), of = S.oficial;
+  if (res.k < res.kPts) out.push({ pri: 'alta', icone: 'gem', ir: 'dashboard', titulo: `Classificação limitada a ${res.classe.nome}`,
+    texto: res.k === res.kRec ? `A pontuação (${nf(res.total)}) daria ${R.classes[res.kPts].nome}, mas a Receita Telecom média de ${fBRLc(res.rec)} não alcança ${fBRLk(R.classes[res.k + 1].receita)}.` : `Há QSC abaixo de ${R.qscMin} na média do ciclo; com isso a classificação fica em ${res.classe.nome}.` });
+  planoProxima().forEach(it => out.push({ pri: 'media', icone: IND[it.id].icone, ir: 'simulador', titulo: `Para ${res.prox.nome}: ${it.txt}`, texto: `Em cada mês de ${rr}, ${it.sub}.` }));
+  QSCS.forEach(id => { const m = res.por[id].media; if (m != null && m < R.qscMin) out.push({ pri: 'alta', icone: IND[id].icone, ir: 'qualidade', titulo: `${IND[id].nome} abaixo de ${R.qscMin}`, texto: `Média do ciclo de ${nf(m)}. Diamante, Platinum e V exigem ${R.qscMin} em todos os QSC.` }); });
+  const va = vm[ci.atual];
+  if (!va.elegFixa) out.push({ pri: 'alta', icone: 'wifi', ir: 'qualidade', titulo: `QSC Fixa zerado em ${rotChave(ci.atual)}`, texto: `${nf(va.ftth)} altas de FTTH no mês, abaixo do mínimo de ${minEleg(R)} para ${R.vigente}.` });
+  riscos().forEach(r => out.push({ pri: 'media', icone: IND[r.id].icone, ir: 'indicadores', titulo: `${IND[r.id].curto} pode cair da Faixa ${r.L}`, texto: `Mantenha pelo menos ${fmtNec(r.id, r.valor)} em ${rr}. A média mensal atual é ${fmtI(r.id, r.base)}.` }));
+  QSCS.forEach(id => { if (!qn[id].completo) out.push({ pri: 'media', icone: 'shield', ir: 'qualidade', titulo: `${IND[id].nome} incompleto em ${rotChave(ci.atual)}`, texto: 'Preencha os KPIs de todos os componentes para a nota do mês ficar correta.' }); });
+  const vazios = ci.meses.filter(k => !vm[k].futuro && !vm[k].atual && !vm[k].manual);
+  if (vazios.length) out.push({ pri: 'media', icone: 'calendar', ir: 'apuracao', titulo: `Meses sem dados: ${vazios.map(rotChave).join(', ')}`, texto: 'Digite os valores da base oficial em Apuração do Ciclo; meses vazios contam como zero no fechamento.' });
+  if (!pronto('altas', S.rep)) out.push(S.rep.origem === 'vazio'
+    ? { pri: 'alta', icone: 'file', ir: 'importacoes', titulo: 'Relatório de altas não carregado', texto: 'Carregue o arquivo de altas do mês em Importações.' }
+    : { pri: 'alta', icone: 'file', ir: 'importacoes', titulo: 'Relatório de altas incompleto', texto: 'Escolha as colunas obrigatórias em Importações › Mapeamento de Colunas.' });
+  const fora = [...A.produtos.values()].filter(p => p.fam === 'outro' && p.valor > 0);
+  if (fora.length) out.push({ pri: 'baixa', icone: 'layers', ir: 'importacoes', titulo: `${pl(fora.length, 'produto não classificado', 'produtos não classificados')}`, texto: `Somam ${fBRL(soma(fora.map(p => p.valor)))} e não entram em nenhum indicador. Confira em Importações › Produtos e Famílias.` });
+  if (of.data == null || of.pontos == null) out.push({ pri: 'baixa', icone: 'trophy', ir: 'apuracao', titulo: 'Base oficial não informada', texto: 'Informe a data e a pontuação da última atualização para comparar com a estimativa.' });
+  else if (S.calc.corte - of.data > 7) out.push({ pri: 'baixa', icone: 'trophy', ir: 'apuracao', titulo: 'Base oficial com mais de 7 dias', texto: `A última atualização informada é de ${fData(of.data)}.` });
+  const ordem = { alta: 0, media: 1, baixa: 2 };
+  return out.sort((a, b) => ordem[a.pri] - ordem[b.pri]);
+}
+function renderAlertas() {
+  const tom = { alta: 'bad', media: 'warn', baixa: '' };
+  $('#a-lista').innerHTML = alertas().map(a => `<div class="card alert"><span class="tile ${tom[a.pri]}">${ic(a.icone, 20)}</span><div class="alert-b"><h3>${a.titulo}</h3><p>${a.texto}</p></div><span class="chip ${a.pri}">Prioridade ${PRI[a.pri].toLowerCase()}</span><button type="button" class="btn sm" data-ir="${a.ir}">Ver</button></div>`).join('')
+    || `<div class="card alert"><span class="tile good">${ic('check', 20)}</span><div class="alert-b"><h3>Nenhum alerta</h3><p>Nada pendente na apuração atual.</p></div></div>`;
+}
+
+// ===== Regras =====
+function montarRegras() {
+  const R = S.R, num = (attrs, val, step = 1, w = 100) => `<input type="number" ${attrs} value="${val}" step="${step}" style="width:${w}px">`;
+  const qscTab = id => `<section class="card"><div class="ch"><span class="tile sm">${ic(IND[id].icone)}</span><div><h2>${IND[id].nome}</h2><p>Limites em % do KPI 1 sobre o KPI 2 · nota máxima ${maxNota(id, R)}</p></div></div>
+    <div class="tw"><table class="t cfg-t"><thead><tr><th>Componente</th><th>Regra</th><th>Limite 1</th><th>Limite 2</th><th>Limite 3</th><th>Pontos 1</th><th>Pontos 2</th><th>Pontos 3</th><th>Pontos 4</th></tr></thead><tbody>${R.qsc[id].map((c, k) => `<tr><th scope="row">${c.nome}</th>
+      <td><select data-qc="${id}" data-ci="${k}" data-f="dir" aria-label="Regra de ${c.nome}"><option value="maior"${c.dir === 'maior' ? ' selected' : ''}>Maior é melhor (≥)</option><option value="menor"${c.dir === 'menor' ? ' selected' : ''}>Menor é melhor (&lt;)</option></select></td>
+      ${c.lims.map((l, j) => `<td>${num(`data-qc="${id}" data-ci="${k}" data-f="l${j}" aria-label="${c.nome}, limite ${j + 1}"`, l, 0.01, 84)}</td>`).join('')}
+      ${c.pts.map((p, j) => `<td>${num(`data-qc="${id}" data-ci="${k}" data-f="p${j}" aria-label="${c.nome}, pontos ${j + 1}"`, p, 1, 72)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`;
+  $('#cfg').innerHTML = `
+    <section class="card"><div class="ch"><span class="tile sm">${ic('chart')}</span><div><h2>Faixas e pontos dos indicadores</h2><p>Valor mínimo de cada faixa (média do ciclo) e os pontos que ela vale.</p></div></div>
+      <div class="tw"><table class="t cfg-t"><thead><tr><th>Indicador</th>${[1, 2, 3, 4, 5].map(n => `<th>Faixa ${n}</th>`).join('')}</tr></thead><tbody>${INDICADORES.map(i => `<tr><th scope="row">${i.curto}<small class="muted" style="display:block;font-weight:500">${i.bloco === 'altas' ? 'Altas' : 'Qualidade'}</small></th>
+        ${R.ind[i.id].faixas.map((t, j) => `<td><div class="duo">${num(`data-rf="${i.id}" data-j="${j}" aria-label="${i.curto}, faixa ${j + 1}, valor mínimo"`, t, i.tipo === 'brl' ? 100 : 1)}${num(`data-rp="${i.id}" data-j="${j}" aria-label="${i.curto}, faixa ${j + 1}, pontos"`, R.ind[i.id].pontos[j], 100)}<small>mínimo · pontos</small></div></td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
+    <div class="g-2">
+      <section class="card"><div class="ch"><span class="tile sm gold">${ic('gem')}</span><div><h2>Classificação</h2><p>Pontuação, Receita Telecom média mínima, bônus e elegibilidade do QSC Fixa.</p></div></div>
+        <div class="tw"><table class="t cfg-t"><thead><tr><th>Pedra</th><th>Pontos a partir de</th><th>Receita Telecom</th><th>Bônus %</th><th>Exige QSC</th><th>Altas FTTH/mês</th></tr></thead><tbody>${R.classes.map((c, k) => `<tr><th scope="row">${c.nome}</th>
+          <td>${num(`data-cl="${k}" data-f="min" aria-label="${c.nome}, pontos"${k ? '' : ' disabled'}`, c.min, 100, 96)}</td><td>${num(`data-cl="${k}" data-f="receita" aria-label="${c.nome}, receita"`, c.receita, 1000, 110)}</td>
+          <td>${num(`data-cl="${k}" data-f="bonus" aria-label="${c.nome}, bônus"`, c.bonus, 0.5, 72)}</td><td><input type="checkbox" data-cl="${k}" data-f="qsc"${c.qsc ? ' checked' : ''} aria-label="${c.nome} exige QSC mínimo"></td>
+          <td>${num(`data-cl="${k}" data-f="eleg" aria-label="${c.nome}, mínimo de altas FTTH"`, c.eleg, 1, 72)}</td></tr>`).join('')}</tbody></table></div>
+        <div class="cb"><div class="pr"><div class="fld"><label for="c-qscmin">Nota mínima de QSC</label><input type="number" id="c-qscmin" data-cfg="qscMin" value="${R.qscMin}" step="1"></div>
+          <div class="fld"><label for="c-vig">Pedra vigente do parceiro</label><select id="c-vig" data-cfg="vigente">${R.classes.map(c => `<option${c.nome === R.vigente ? ' selected' : ''}>${esc(c.nome)}</option>`).join('')}</select></div></div>
+          <p class="muted" style="font-size:.78rem">A pedra vigente define o mínimo de altas de FTTH do QSC Fixa (Ouro, Prata e Bronze: 35; Diamante: 45; Platinum: 60).</p></div></section>
+      <section class="card"><div class="ch"><span class="tile sm">${ic('layers')}</span><div><h2>Famílias de produtos</h2><p>Palavras do campo Produto, separadas por vírgula. A ordem de checagem é a da lista.</p></div></div>
+        <div class="cb">${[['novos', 'Novos Produtos (Energia, Vale Saúde)'], ['locacao', 'Locação de equipamentos (conta em Receita Telecom)'], ['eletronicos', 'Eletrônicos / Equipamentos / One Shot'], ['telecom', 'Receita Telecom / TI Recorrente'], ['ftth', 'Físicos FTTH (dentro de Receita Telecom)']].map(([k, rot]) => `<div class="fld"><label for="c-kw-${k}">${rot}</label><input type="text" id="c-kw-${k}" data-kw="${k}" value="${esc(R.palavras[k])}"></div>`).join('')}</div></section>
+    </div>
+    ${QSCS.map(qscTab).join('')}`;
+}
+function cfgMudou(el) {
+  const R = S.R, d = el.dataset;
+  if (d.kw) R.palavras[d.kw] = el.value;
+  else if (d.cfg === 'vigente') R.vigente = el.value;
+  else if (d.cl != null && d.f === 'qsc') R.classes[+d.cl].qsc = el.checked;
+  else if (d.qc && d.f === 'dir') R.qsc[d.qc][+d.ci].dir = el.value;
+  else {
+    const v = parseFloat(el.value);
+    if (!isFinite(v)) return;
+    if (d.rf) R.ind[d.rf].faixas[+d.j] = v;
+    else if (d.rp) R.ind[d.rp].pontos[+d.j] = v;
+    else if (d.cl != null) R.classes[+d.cl][d.f] = v;
+    else if (d.cfg) R[d.cfg] = v;
+    else if (d.qc) { const c = R.qsc[d.qc][+d.ci]; if (d.f[0] === 'l') c.lims[+d.f[1]] = v; else c.pts[+d.f[1]] = v; }
+  }
+  calcular(); S.fut = null; renderMoldura();
+}
+
+// ===== Navegação, eventos e início =====
+function renderPagina() {
+  ({ dashboard: renderDashboard, indicadores: renderIndicadores, qualidade: montarQsc, simulador: montarSim, apuracao: montarApuracao, importacoes: renderImportacoes, alertas: renderAlertas, regras: () => {} })[S.pagina]();
+}
+function irPara(p) {
+  if (!PAGINAS.some(x => x[0] === p)) p = 'dashboard';
+  const mudou = S.pagina !== p;
+  S.pagina = p;
+  PAGINAS.forEach(([id]) => { $('#' + id).hidden = id !== p; });
+  renderMoldura();
+  renderPagina();
+  try { history.replaceState(null, '', '#' + p); } catch (e) { /* sem histórico no visualizador */ }
+  if (mudou) window.scrollTo(0, 0);
+}
+function atualizar() { calcular(); S.fut = null; renderMoldura(); renderPagina(); }
+function desenharTorre() {
+  const cx = 75, topo = 34, base = 270, xl = y => cx - (7 + 40 * (y - topo) / (base - topo)), xr = y => 2 * cx - xl(y);
+  const fy = 20; // luz no topo da antena
+  let d = `M${xl(topo)} ${topo}L${xl(base)} ${base}M${xr(topo)} ${topo}L${xr(base)} ${base}M${cx} ${fy}V${topo}`;
+  for (let y = topo; y < base - 1; y += 24) { const y2 = Math.min(base, y + 24); d += `M${xl(y)} ${y}H${xr(y)}M${xl(y)} ${y}L${xr(y2)} ${y2}M${xr(y)} ${y}L${xl(y2)} ${y2}`; }
+  // ondas de sinal: três arcos de cada lado, acesos em sequência pelo CSS
+  const arco = (r, lado) => { const dx = 0.643 * r * lado, dy = 0.766 * r; return `M${cx + dx} ${fy - dy}A${r} ${r} 0 0 ${lado > 0 ? 1 : 0} ${cx + dx} ${fy + dy}`; };
+  const ondas = [8, 14, 20].map((r, k) => `<path class="onda o${k + 1}" d="${arco(r, 1)}${arco(r, -1)}"/>`).join('');
+  $('#tower').innerHTML = `<g class="estrutura"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <rect x="${cx - 21}" y="44" width="6" height="24" rx="1" fill="currentColor"/><rect x="${cx + 15}" y="44" width="6" height="24" rx="1" fill="currentColor"/><rect x="${cx - 3}" y="48" width="6" height="22" rx="1" fill="currentColor"/></g>
+    <g class="sinal" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">${ondas}</g>
+    <circle class="farol" cx="${cx}" cy="${fy}" r="2.6"/>`;
+}
+const marcarCenarios = () => document.querySelectorAll('#s-cen button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cen === S.cenario)));
+
+document.addEventListener('click', e => {
+  const pop = $('#datepop');
+  if (!pop.hidden && !e.target.closest('.datewrap')) { pop.hidden = true; $('#datebtn').setAttribute('aria-expanded', 'false'); }
+  if (e.target.closest('#drop')) { $('#file-many').click(); return; }
+  const b = e.target.closest('button');
+  if (!b) return;
+  const d = b.dataset;
+  if (d.ir) irPara(d.ir);
+  else if (d.rec != null) { const r = (S.recs || [])[+d.rec]; if (r) { simularPlano(r.plano); irPara('simulador'); } }
+  else if (d.cen) { aplicarCenario(d.cen); montarSim(); }
+  else if (d.modo) { S.modo = d.modo; atualizar(); }
+  else if (d.tab) { S.abaImp = d.tab; renderImportacoes(); }
+  else if (d.pick) $('#file-' + d.pick).click();
+  else if (d.reset) { usarExemploAltas(); S.log.unshift({ quando: new Date(), txt: 'Altas do mês: voltou aos dados de exemplo', st: 'ex' }); atualizar(); }
+  else if (b.id === 's-reset') { aplicarCenario(S.cenario === 'personalizado' ? 'provavel' : S.cenario); montarSim(); }
+  else if (b.id === 's-aplicar') { const pl2 = {}; (S.planoEsf || []).forEach(x => { pl2[x.id] = x.valor; }); simularPlano(pl2); montarSim(); }
+  else if (b.id === 'datebtn') { pop.hidden = !pop.hidden; b.setAttribute('aria-expanded', String(!pop.hidden)); $('#corte').value = isoDe(corteAtual()); }
+  else if (b.id === 'corte-auto') { S.corteManual = null; atualizar(); $('#corte').value = isoDe(corteAtual()); }
+  else if (b.id === 'copiar') copiarTabela(b);
+  else if (b.id === 'f-limpar') { S.filtro = { bloco: '', sit: '' }; renderIndicadores(); }
+  else if (b.id === 'cfg-reset') { S.R = clone(REGRAS_EXEMPLO); montarRegras(); atualizar(); }
+});
+$('#drop').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#file-many').click(); } });
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.matches('input[type="file"]')) { const files = [...t.files]; t.value = ''; if (files.length) receber(files, t.dataset.slot || null); }
+  else if (t.matches('select[data-rel]')) {
+    if (t.value) S.rep.mapa[t.dataset.campo] = t.value; else delete S.rep.mapa[t.dataset.campo];
+    S.log.unshift({ quando: new Date(), txt: `Altas: campo “${DEF.altas.campos.find(c => c.key === t.dataset.campo).label}” ${t.value ? `ligado à coluna “${t.value}”` : 'desligado'}`, st: 'info' });
+    atualizar();
+  }
+  else if (t.id === 'corte') { S.corteManual = lerIso(t.value); atualizar(); }
+  else if (t.id === 'f-bloco') { S.filtro.bloco = t.value; renderIndicadores(); }
+  else if (t.id === 'f-sit') { S.filtro.sit = t.value; renderIndicadores(); }
+  else if (t.id === 'of-data') { S.oficial.data = lerIso(t.value); S.oficial.exemplo = false; atualizarOficial(); renderMoldura(); }
+  else if (t.closest('#cfg') && (t.matches('select') || t.type === 'checkbox')) cfgMudou(t);
+});
+document.addEventListener('input', e => {
+  const t = e.target, d = t.dataset;
+  if (t.id === 'busca') { S.busca = t.value; if (S.pagina !== 'dashboard' && S.pagina !== 'indicadores') irPara('indicadores'); else renderPagina(); }
+  else if (d.sim || d.simn) {
+    const id = d.sim || d.simn, v = parseFloat(t.value);
+    if (!isFinite(v)) return;
+    S.fut[id] = v;
+    $((d.sim ? '#sn-' : '#sr-') + id).value = v;
+    S.cenario = 'personalizado'; marcarCenarios(); atualizarSim();
+  }
+  else if (d.q) {
+    const v = t.value.trim() === '' ? null : parseFloat(t.value), par = ((S.qsc[d.q] = S.qsc[d.q] || {})[d.c] = (S.qsc[d.q][d.c] || [null, null]).slice());
+    par[+d.k] = isFinite(v) ? v : null;
+    S.qscFonte = 'manual'; S.qscQuando = new Date();
+    calcular(); atualizarQsc(); renderMoldura();
+  }
+  else if (d.ap) {
+    const v = t.value.trim() === '' ? null : parseFloat(t.value), mes = (S.meses[d.ap] = S.meses[d.ap] || {});
+    if (v == null || !isFinite(v)) delete mes[d.campo]; else mes[d.campo] = v;
+    S.mesesExemplo = false;
+    calcular(); atualizarApuracao(); atualizarOficial(); renderMoldura();
+  }
+  else if (t.id === 'of-pontos') { const v = parseFloat(t.value); S.oficial.pontos = isFinite(v) ? v : null; S.oficial.exemplo = false; atualizarOficial(); renderMoldura(); }
+  else if (t.closest('#cfg') && t.matches('input:not([type="checkbox"])')) cfgMudou(t);
+});
+let tRes = null;
+window.addEventListener('resize', () => {
+  clearTimeout(tRes);
+  tRes = setTimeout(() => { if (S.pagina === 'simulador') atualizarSim(); else if (['dashboard', 'indicadores'].includes(S.pagina)) renderPagina(); }, 150);
+});
+const drop = $('#drop');
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { const files = [...(e.dataTransfer?.files || [])]; if (files.length) receber(files, null); });
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => e.preventDefault());
+
+trocarIcones();
+desenharTorre();
+calcular();
+montarRegras();
+irPara((location.hash || '').slice(1) || 'dashboard');
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="servidor.js"></script>
+<script src="aparencia.js"></script>
+</body>
+</html>
