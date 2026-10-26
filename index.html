@@ -95,7 +95,19 @@ button { font: inherit; color: inherit; }
 .app { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; }
 .side { position: sticky; top: 0; height: 100vh; overflow: hidden auto; display: flex; flex-direction: column; gap: 28px; padding: 24px 14px 0; padding-left: max(14px, env(safe-area-inset-left, 0px)); background: linear-gradient(180deg, var(--side) 0%, var(--side-2) 100%); color: var(--side-ink); }
 .side :focus-visible { outline-color: var(--side-ink); }
-.logo { display: flex; align-items: center; gap: 12px; padding: 0 8px; }
+.logo { position: relative; display: flex; align-items: center; gap: 12px; margin: -6px 0; padding: 6px 8px; border: 0; border-radius: 12px; background: none; text-align: left; cursor: pointer; transition: background-color 0.15s; }
+.logo:hover { background: var(--side-hover); }
+/* Logo como botão de atualizar: uma luz varre a base enquanto os dados são lidos de novo */
+.logo::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, #6FB6FF, transparent) no-repeat; background-size: 40% 100%; opacity: 0; }
+.logo.atualizando { cursor: progress; }
+.logo.atualizando::after { opacity: 1; animation: logo-varre 0.8s ease-in-out infinite; }
+.logo.atualizando img { animation: logo-pulso 0.8s ease-in-out infinite; }
+@keyframes logo-varre { from { background-position: -100% 0; } to { background-position: 200% 0; } }
+@keyframes logo-pulso { 50% { opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) {
+  .logo.atualizando::after { animation: none; background-size: 100% 100%; }
+  .logo.atualizando img { animation: none; opacity: 0.7; }
+}
 .logo strong { display: block; font-size: 1.2rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; }
 .logo small { display: block; margin-top: 6px; font-size: 0.56rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--side-muted); line-height: 1.4; }
 .nav { display: grid; gap: 4px; }
@@ -456,6 +468,7 @@ input:hover, select:hover { border-color: var(--muted); }
   .app { grid-template-columns: minmax(0, 1fr); }
   .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .logo small, .side-foot { display: none; }
+  .logo { margin: -4px; padding: 4px; }
   .nav { display: flex; width: 100%; gap: 2px; overflow-x: auto; }
   .nav button { padding: 8px 10px; white-space: nowrap; }
   .top, .content { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
@@ -476,9 +489,9 @@ input:hover, select:hover { border-color: var(--muted); }
 
 <div class="app">
   <aside class="side">
-    <div class="logo">
-      <img src="logo-sm-score.png" alt="SM Score · Radar de Certificação" width="222" height="76">
-    </div>
+    <button type="button" class="logo" id="logo-btn" title="Atualizar os dados e voltar ao Dashboard">
+      <img src="logo-sm-score.png" alt="SM Score · Radar de Certificação: atualizar e voltar ao Dashboard" width="222" height="76">
+    </button>
     <nav class="nav" id="nav" aria-label="Menu principal"></nav>
     <div class="side-foot">
       <svg class="tower" id="tower" width="150" height="270" viewBox="0 0 150 270" aria-hidden="true"></svg>
@@ -1845,10 +1858,26 @@ function irPara(p) {
   PAGINAS.forEach(([id]) => { $('#' + id).hidden = id !== p; });
   renderMoldura();
   renderPagina();
-  try { history.replaceState(null, '', '#' + p); } catch (e) { /* sem histórico no visualizador */ }
+  // "#/pagina" e não "#pagina": o navegador não confunde com o id da seção e não rola a tela até ela
+  try { history.replaceState(null, '', '#/' + p); } catch (e) { /* sem histórico no visualizador */ }
   if (mudou) window.scrollTo(0, 0);
 }
 function atualizar() { calcular(); S.fut = null; renderMoldura(); renderPagina(); }
+const paginaDoEndereco = () => (location.hash || '').replace(/^#\/?/, '') || 'dashboard'; // aceita "#/pagina" e o antigo "#pagina"
+// Clique na logo: lê os dados de novo (do banco, quando há login) e volta ao Dashboard
+async function atualizarPelaLogo(b) {
+  if (b.classList.contains('atualizando')) return;
+  b.classList.add('atualizando');
+  const minimo = new Promise(r => setTimeout(r, 800)); // tempo para a animação ser percebida
+  try {
+    if (window.recarregarDados) await window.recarregarDados('dashboard');
+    else { calcular(); S.fut = null; irPara('dashboard'); }
+  } finally {
+    await minimo;
+    b.classList.remove('atualizando');
+    window.scrollTo(0, 0);
+  }
+}
 function desenharTorre() {
   const cx = 75, topo = 34, base = 270, xl = y => cx - (7 + 40 * (y - topo) / (base - topo)), xr = y => 2 * cx - xl(y);
   const fy = 20; // luz no topo da antena
@@ -1872,6 +1901,7 @@ document.addEventListener('click', e => {
   if (!b) return;
   const d = b.dataset;
   if (d.ir) irPara(d.ir);
+  else if (b.id === 'logo-btn') atualizarPelaLogo(b);
   else if (d.rec != null) { const r = (S.recs || [])[+d.rec]; if (r) { simularPlano(r.plano); irPara('simulador'); } }
   else if (d.cen) { aplicarCenario(d.cen); montarSim(); }
   else if (d.modo) { S.modo = d.modo; atualizar(); }
@@ -1942,7 +1972,7 @@ trocarIcones();
 desenharTorre();
 calcular();
 montarRegras();
-irPara((location.hash || '').slice(1) || 'dashboard');
+irPara(paginaDoEndereco());
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>

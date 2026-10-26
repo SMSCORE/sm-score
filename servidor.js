@@ -73,8 +73,9 @@
   function status(tipo, msg) {
     const el = $('#sv-status');
     if (!el) return;
-    el.className = 'sv-status' + (tipo === 'erro' ? ' erro' : '');
-    el.textContent = tipo === 'salvando' ? 'Salvando…' : tipo === 'ok' ? `Salvo às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : tipo === 'erro' ? 'Erro ao salvar' : '';
+    const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    el.className = 'sv-status' + (tipo === 'erro' || tipo === 'erro-ler' ? ' erro' : '');
+    el.textContent = { salvando: 'Salvando…', ok: `Salvo às ${hora}`, atualizado: `Atualizado às ${hora}`, erro: 'Erro ao salvar', 'erro-ler': 'Erro ao atualizar' }[tipo] || '';
     el.title = msg || '';
   }
 
@@ -173,7 +174,7 @@
     document.documentElement.classList.remove('sv-bloqueado');
     montarTopo();
     montarRegras();
-    irPara((location.hash || '').slice(1) || 'dashboard');
+    irPara(paginaDoEndereco());
     registrar('Entrou no sistema');
   }
   async function iniciarServidor() {
@@ -184,10 +185,16 @@
     SV.sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT' && SV.perfil) location.reload(); });
   }
   async function sair() { SV.perfil = null; if (SV.sb) await SV.sb.auth.signOut(); location.reload(); }
-  async function recarregar() {
+  async function recarregar(pagina) {
+    if (!SV.perfil) return;
+    // grava o que ainda estiver pendente antes de ler de novo, para não perder alterações
+    clearTimeout(tVer);
+    while (salvando) await new Promise(r => setTimeout(r, 100));
+    await verificar();
     status('', '');
-    try { await carregarEstado(); montarRegras(); irPara(S.pagina); status('ok'); } catch (e) { status('erro', e.message); }
+    try { await carregarEstado(); montarRegras(); irPara(typeof pagina === 'string' ? pagina : S.pagina); status('atualizado'); } catch (e) { status('erro-ler', e.message); }
   }
+  if (SERVIDOR) window.recarregarDados = recarregar;
   async function trocarMinhaSenha(ev) {
     ev.preventDefault();
     const a = $('#sv-ns1').value, b = $('#sv-ns2').value, msg = $('#sv-ns-msg');
